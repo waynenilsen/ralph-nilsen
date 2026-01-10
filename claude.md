@@ -65,3 +65,11 @@ Running in Docker sandbox:
 ## Self-Improvement Note
 
 This framework is a work in progress. The first goal is self-improvement of the framework itself.
+
+Update current_mode.md when transitioning phases
+Update current_mode.md when transitioning phases
+Update current_mode.md when transitioning phases
+Update current_mode.md when transitioning phases
+Update current_mode.md when transitioning phases
+
+If you make changes, add them to git create a feature branch and make a pr.
