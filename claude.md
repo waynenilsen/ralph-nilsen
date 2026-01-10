@@ -1,23 +1,62 @@
-we will make heavy use of the gh cli tool
+# Ralph-Nilsen Framework
 
-look at @current_project.md and @current_mode.md
+An agentic development workflow using Claude with structured phases and IRC-style communication logging.
 
-modes and personas
+## Quick Start
 
-1 @./phases/ideation.md
-2 @./phases/prd.md
-3 @./phases/epic-planning.md
-4 @./phases/implementation.md
-5 @./phases/qa.md
+1. Check `current_project.md` for the active GitHub project
+2. Check `current_mode.md` for the current phase
+3. Read the corresponding phase file in `phases/`
+4. Log all activity to `channel.md`
 
-you will append to channel.md and use tail to look at it it will get to be quite a long file, it is a recording of who said what in an irc type way
+## Phases
 
-@user: message
+| # | Phase | File | Purpose |
+|---|-------|------|---------|
+| 1 | Ideation | `./phases/ideation.md` | Discover what to build |
+| 2 | PRD | `./phases/prd.md` | Document requirements |
+| 3 | Epic Planning | `./phases/epic-planning.md` | Break down into tasks |
+| 4 | Implementation | `./phases/implementation.md` | Write the code |
+| 5 | QA | `./phases/qa.md` | Test and validate |
 
-each message must be on a single line each user can @reference another user or a file with a relpath
+## Communication Protocol
 
-you are running in a docker sandbox and thus you don't have docker but you can install whatever you want which is nice
+All activity is logged to `channel.md` in IRC-style format:
 
-make a PR when you're done with what you're doing
+```
+@claude: Starting implementation of feature X
+@user: Please also add tests for edge cases
+@claude: Updated to include edge case tests, see @./tests/feature_test.py
+```
 
-this is a wip the first step is self improvement we are going two skip prd phase as the current target is our self improvement
+Rules:
+- Each message on a single line
+- Prefix with `@username:` (e.g., `@claude:`, `@user:`)
+- Reference files with `@./relative/path`
+- Reference other users with `@username`
+
+## Tools
+
+We use the `gh` CLI for GitHub operations:
+- `gh issue create` - Create issues
+- `gh pr create` - Create pull requests
+- `gh project` - Manage project boards
+
+## Environment
+
+Running in Docker sandbox:
+- No nested Docker available
+- Can install any packages needed
+- Full filesystem access
+
+## Workflow
+
+1. Always check current mode before starting
+2. Follow phase-specific instructions
+3. Log progress to channel.md
+4. Create PR when work is complete
+5. Update current_mode.md when transitioning phases
+
+## Self-Improvement Note
+
+This framework is a work in progress. The first goal is self-improvement of the framework itself.
