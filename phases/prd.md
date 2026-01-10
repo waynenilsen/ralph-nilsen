@@ -25,12 +25,26 @@ Create a new file in the ./prd directory
 - Acceptance criteria for each feature
 - Updated project board items
 
-## Exit Criteria
+## Exit Criteria (Machine-Readable)
 
-- All requirements documented and reviewed
-- GitHub issues created for tracking
-- Ready for epic planning or implementation
+- [ ] PRD_01: PRD document created in prd/ directory
+- [ ] PRD_02: All requirements have acceptance criteria defined
+- [ ] PRD_03: GitHub issues created for each requirement
+- [ ] PRD_04: PRD logged to channel.md with file reference
+- [ ] PRD_05: Human approval received (checkpoint)
+
+## Human Checkpoint
+
+**This phase requires human approval before transitioning.**
+
+After completing PRD_01 through PRD_04:
+1. Log to channel.md: `@claude: PRD complete. Awaiting approval.`
+2. Wait for: `@user: approved` (or user message "continue")
+3. Only proceed to transition after approval received
 
 ## Transition
 
-Update current_mode.md to `epic-planning` or `implementation` when complete.
+When all exit criteria are checked (including PRD_05 approval):
+1. Update `loop_state.md` with phase completion
+2. Update `current_mode.md` to `epic-planning`
+3. Log transition to `channel.md`
