@@ -21,10 +21,17 @@ This phase breaks down PRD requirements into implementable epics and tasks.
 - Task breakdown documented
 - Implementation order defined
 
-## Exit Criteria
-- All epics and tasks created as GitHub issues
-- Clear implementation path established
-- Ready for implementation phase
+## Exit Criteria (Machine-Readable)
+
+- [ ] EPIC_01: All PRD requirements grouped into epics
+- [ ] EPIC_02: Epic issues created in GitHub (titled "Epic: <name>")
+- [ ] EPIC_03: Each epic broken into implementation tasks
+- [ ] EPIC_04: Implementation order documented (implementation_order.md or in channel.md)
+- [ ] EPIC_05: Dependencies between tasks identified
 
 ## Transition
-Update current_mode.md to `implementation` when complete.
+
+When all exit criteria are checked:
+1. Update `loop_state.md` with phase completion
+2. Update `current_mode.md` to `implementation`
+3. Log transition to `channel.md`

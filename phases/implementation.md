@@ -26,12 +26,28 @@ This phase executes the planned work and produces working code.
 - Run tests before committing
 - Keep PRs reviewable (not too large)
 
-## Exit Criteria
+## Exit Criteria (Machine-Readable)
 
-- Feature implemented and tested
-- PR created and ready for review
-- All acceptance criteria met
+- [ ] IMPL_01: All tasks in current epic implemented
+- [ ] IMPL_02: Code committed with descriptive messages
+- [ ] IMPL_03: PR created for review
+- [ ] IMPL_04: Progress logged to channel.md
+- [ ] IMPL_05: Human approval received for PR (checkpoint)
+
+## Human Checkpoint
+
+**This phase requires human approval before transitioning.**
+
+After completing IMPL_01 through IMPL_04:
+1. Log to channel.md: `@claude: Implementation complete. PR ready for review.`
+2. Wait for: `@user: approved` (or PR merge/approval)
+3. Only proceed to QA after approval received
 
 ## Transition
 
-Update current_mode.md to `qa` when implementation complete - CRITICAL - if you did not pull the last ticket from the project then its not complete.
+When all exit criteria are checked (including IMPL_05 approval):
+1. Update `loop_state.md` with phase completion
+2. Update `current_mode.md` to `qa`
+3. Log transition to `channel.md`
+
+**CRITICAL**: Do not transition until ALL tasks from the epic are complete.
