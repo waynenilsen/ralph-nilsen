@@ -11,13 +11,15 @@ An agentic development workflow using Claude with structured phases and IRC-styl
 
 ## Phases
 
-| # | Phase | File | Purpose |
-|---|-------|------|---------|
-| 1 | Ideation | `./phases/ideation.md` | Discover what to build |
-| 2 | PRD | `./phases/prd.md` | Document requirements |
-| 3 | Epic Planning | `./phases/epic-planning.md` | Break down into tasks |
-| 4 | Implementation | `./phases/implementation.md` | Write the code |
-| 5 | QA | `./phases/qa.md` | Test and validate |
+you must not skip steps, never skip steps
+
+| #   | Phase          | File                         | Purpose                |
+| --- | -------------- | ---------------------------- | ---------------------- |
+| 1   | Ideation       | `./phases/ideation.md`       | Discover what to build |
+| 2   | PRD            | `./phases/prd.md`            | Document requirements  |
+| 3   | Epic Planning  | `./phases/epic-planning.md`  | Break down into tasks  |
+| 4   | Implementation | `./phases/implementation.md` | Write the code         |
+| 5   | QA             | `./phases/qa.md`             | Test and validate      |
 
 ## Communication Protocol
 
@@ -30,6 +32,7 @@ All activity is logged to `channel.md` in IRC-style format:
 ```
 
 Rules:
+
 - Each message on a single line
 - Prefix with `@username:` (e.g., `@claude:`, `@user:`)
 - Reference files with `@./relative/path`
@@ -38,6 +41,7 @@ Rules:
 ## Tools
 
 We use the `gh` CLI for GitHub operations:
+
 - `gh issue create` - Create issues
 - `gh pr create` - Create pull requests
 - `gh project` - Manage project boards
@@ -45,13 +49,14 @@ We use the `gh` CLI for GitHub operations:
 ## Environment
 
 Running in Docker sandbox:
+
 - No nested Docker available
 - Can install any packages needed
 - Full filesystem access
 
 ## Workflow
 
-1. Always check current mode before starting
+1. Always check current_mode.md before starting
 2. Follow phase-specific instructions
 3. Log progress to channel.md
 4. Create PR when work is complete

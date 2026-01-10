@@ -1,6 +1,6 @@
 set -euo pipefail
 
-docker sandbox run claude -p $1 \
+docker sandbox run claude -p "$1" \
         --dangerously-skip-permissions \
         --output-format=stream-json \
         --model opus \
