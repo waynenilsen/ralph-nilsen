@@ -11,7 +11,7 @@ This phase executes the planned work and produces working code.
 
 ## Activities
 
-1. Pick a task from the project board
+1. Pick a task from the project board, move it into in progress.
 2. Create a feature branch: `git checkout -b feature/<task-name>`
 3. Implement the feature
 4. Test locally
