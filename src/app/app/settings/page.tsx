@@ -2,6 +2,18 @@
 
 import Link from "next/link";
 import { trpc } from "@/client/lib/trpc";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function SettingsPage() {
   const { data: meData, isLoading } = trpc.auth.me.useQuery();
@@ -9,7 +21,7 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <Spinner className="size-8" />
       </div>
     );
   }
@@ -21,75 +33,84 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Settings</h1>
-        <p className="text-zinc-600 mt-1">Manage your account settings.</p>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage your account settings.</p>
       </div>
 
-      <div className="bg-white rounded-lg border border-zinc-200 divide-y divide-zinc-200">
-        <div className="p-4">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4">Profile</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">Username</label>
-              <p className="text-zinc-900">{meData.user.username}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">Email</label>
-              <div className="flex items-center gap-2">
-                <p className="text-zinc-900">{meData.user.email}</p>
-                {meData.user.email_verified ? (
-                  <span className="text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-full">
-                    Verified
-                  </span>
-                ) : (
-                  <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full">
-                    Not verified
-                  </span>
-                )}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">Member since</label>
-              <p className="text-zinc-900">
-                {new Date(meData.user.created_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="mb-1">Username</Label>
+            <p>{meData.user.username}</p>
+          </div>
+          <div>
+            <Label className="mb-1">Email</Label>
+            <div className="flex items-center gap-2">
+              <p>{meData.user.email}</p>
+              {meData.user.email_verified ? (
+                <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
+                  Verified
+                </Badge>
+              ) : (
+                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100">
+                  Not verified
+                </Badge>
+              )}
             </div>
           </div>
-        </div>
+          <div>
+            <Label className="mb-1">Member since</Label>
+            <p>
+              {new Date(meData.user.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </CardContent>
 
-        <div className="p-4">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4">Current Organization</h2>
+        <Separator />
+
+        <CardHeader>
+          <CardTitle>Current Organization</CardTitle>
+        </CardHeader>
+        <CardContent>
           {meData.tenant ? (
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-1">Name</label>
-                <p className="text-zinc-900">{meData.tenant.name}</p>
+                <Label className="mb-1">Name</Label>
+                <p>{meData.tenant.name}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-1">Slug</label>
-                <p className="text-zinc-500 font-mono text-sm">{meData.tenant.slug}</p>
+                <Label className="mb-1">Slug</Label>
+                <p className="text-muted-foreground font-mono text-sm">
+                  {meData.tenant.slug}
+                </p>
               </div>
             </div>
           ) : (
-            <p className="text-zinc-500">No organization selected</p>
+            <p className="text-muted-foreground">No organization selected</p>
           )}
-        </div>
+        </CardContent>
 
-        <div className="p-4">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-2">Security</h2>
-          <p className="text-zinc-600 text-sm mb-4">Manage your password and security settings.</p>
-          <Link
-            href="/reset-password"
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-          >
-            Change password
-          </Link>
-        </div>
-      </div>
+        <Separator />
+
+        <CardHeader>
+          <CardTitle>Security</CardTitle>
+          <CardDescription>
+            Manage your password and security settings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="link" asChild className="p-0 h-auto">
+            <Link href="/reset-password">Change password</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

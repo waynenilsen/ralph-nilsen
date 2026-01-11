@@ -3,8 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ClipboardCheck, AlertCircle } from "lucide-react";
 import { TRPCSessionProvider } from "@/client/components/TRPCSessionProvider";
 import { trpc } from "@/client/lib/trpc";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function SigninForm() {
   const router = useRouter();
@@ -39,51 +45,42 @@ function SigninForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
-      <div>
-        <label htmlFor="identifier" className="block text-sm font-medium text-zinc-700 mb-1">
-          Email or Username
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="identifier">Email or Username</Label>
+        <Input
           id="identifier"
           type="text"
           value={formData.identifier}
           onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="you@example.com or username"
         />
       </div>
 
-      <div>
-        <div className="flex justify-between items-center mb-1">
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-700">
-            Password
-          </label>
-          <Link href="/reset-password" className="text-sm text-blue-600 hover:underline">
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <Label htmlFor="password">Password</Label>
+          <Link href="/reset-password" className="text-sm text-primary hover:underline">
             Forgot password?
           </Link>
         </div>
-        <input
+        <Input
           id="password"
           type="password"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Enter your password"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={signin.isPending}
-        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      <Button type="submit" disabled={signin.isPending} className="w-full">
         {signin.isPending ? "Signing in..." : "Sign In"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -91,28 +88,30 @@ function SigninForm() {
 export default function SigninPage() {
   return (
     <TRPCSessionProvider>
-      <main className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <ClipboardCheck className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-zinc-900">Todo App</span>
+              <span className="font-bold text-xl text-foreground">Todo App</span>
             </Link>
-            <h1 className="text-2xl font-bold text-zinc-900">Welcome back</h1>
-            <p className="text-zinc-600 mt-1">Sign in to your account</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-zinc-200 p-6">
-            <SigninForm />
-          </div>
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Welcome back</CardTitle>
+              <CardDescription>Sign in to your account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SigninForm />
+            </CardContent>
+          </Card>
 
-          <p className="text-center text-zinc-600 mt-4">
+          <p className="text-center text-muted-foreground mt-4">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-blue-600 hover:underline font-medium">
+            <Link href="/signup" className="text-primary hover:underline font-medium">
               Sign up
             </Link>
           </p>

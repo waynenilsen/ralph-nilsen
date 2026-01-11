@@ -14,7 +14,10 @@
       "Bash(curl:*)",
       "Bash(ls:*)",
       "Bash(docker ps:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(bunx shadcn@latest init:*)",
+      "Bash(bunx shadcn@latest add:*)"
     ]
   }
 }

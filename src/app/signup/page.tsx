@@ -3,8 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ClipboardCheck, AlertCircle } from "lucide-react";
 import { TRPCSessionProvider } from "@/client/components/TRPCSessionProvider";
 import { trpc } from "@/client/lib/trpc";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function SignupForm() {
   const router = useRouter();
@@ -69,83 +81,72 @@ function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {errors.form && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm" data-testid="signup-form-error">
-          {errors.form}
-        </div>
+        <Alert variant="destructive" data-testid="signup-form-error">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{errors.form}</AlertDescription>
+        </Alert>
       )}
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
-          Email
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
           id="email"
           data-testid="signup-email"
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="you@example.com"
         />
-        {errors.email && <p className="mt-1 text-sm text-red-600" data-testid="signup-email-error">{errors.email}</p>}
+        {errors.email && <p className="text-sm text-destructive" data-testid="signup-email-error">{errors.email}</p>}
       </div>
 
-      <div>
-        <label htmlFor="username" className="block text-sm font-medium text-zinc-700 mb-1">
-          Username
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="username">Username</Label>
+        <Input
           id="username"
           data-testid="signup-username"
           type="text"
           value={formData.username}
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="johndoe"
         />
-        {errors.username && <p className="mt-1 text-sm text-red-600" data-testid="signup-username-error">{errors.username}</p>}
+        {errors.username && <p className="text-sm text-destructive" data-testid="signup-username-error">{errors.username}</p>}
       </div>
 
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-zinc-700 mb-1">
-          Password
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
           id="password"
           data-testid="signup-password"
           type="password"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="At least 8 characters"
         />
-        {errors.password && <p className="mt-1 text-sm text-red-600" data-testid="signup-password-error">{errors.password}</p>}
+        {errors.password && <p className="text-sm text-destructive" data-testid="signup-password-error">{errors.password}</p>}
       </div>
 
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-zinc-700 mb-1">
-          Confirm Password
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Input
           id="confirmPassword"
           data-testid="signup-confirm-password"
           type="password"
           value={formData.confirmPassword}
           onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Repeat your password"
         />
-        {errors.confirmPassword && <p className="mt-1 text-sm text-red-600" data-testid="signup-confirm-password-error">{errors.confirmPassword}</p>}
+        {errors.confirmPassword && <p className="text-sm text-destructive" data-testid="signup-confirm-password-error">{errors.confirmPassword}</p>}
       </div>
 
-      <button
+      <Button
         type="submit"
         data-testid="signup-submit"
         disabled={signup.isPending}
-        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full"
       >
         {signup.isPending ? "Creating account..." : "Create Account"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -153,28 +154,30 @@ function SignupForm() {
 export default function SignupPage() {
   return (
     <TRPCSessionProvider>
-      <main className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <ClipboardCheck className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-zinc-900">Todo App</span>
+              <span className="font-bold text-xl text-foreground">Todo App</span>
             </Link>
-            <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
-            <p className="text-zinc-600 mt-1">Start organizing your tasks today</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-zinc-200 p-6">
-            <SignupForm />
-          </div>
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Create your account</CardTitle>
+              <CardDescription>Start organizing your tasks today</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SignupForm />
+            </CardContent>
+          </Card>
 
-          <p className="text-center text-zinc-600 mt-4">
+          <p className="text-center text-muted-foreground mt-4">
             Already have an account?{" "}
-            <Link href="/signin" className="text-blue-600 hover:underline font-medium">
+            <Link href="/signin" className="text-primary hover:underline font-medium">
               Sign in
             </Link>
           </p>
