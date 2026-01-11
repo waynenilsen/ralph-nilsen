@@ -20,7 +20,10 @@ bun install
 bun run docker:up
 ```
 
-This starts PostgreSQL on port 40001.
+This starts:
+- PostgreSQL on port 40001
+- MailHog SMTP server on port 40025 (for email testing)
+- MailHog web UI on port 40080 (view captured emails)
 
 ### 3. Run Database Migrations
 
@@ -72,6 +75,8 @@ All ports must be in the 40000-50000 range:
 
 - **Next.js**: 40000
 - **PostgreSQL**: 40001
+- **MailHog SMTP**: 40025
+- **MailHog Web UI**: 40080
 
 ## Docker Commands
 
@@ -116,3 +121,32 @@ lsof -ti:40001 | xargs kill -9
 1. Ensure Docker is running: `docker ps`
 2. Check PostgreSQL container: `docker-compose ps`
 3. Verify DATABASE_URL in .env.local
+
+## Testing
+
+### Unit Tests
+
+```bash
+bun run test
+```
+
+### E2E Tests (Playwright)
+
+```bash
+# Install Playwright browsers (first time)
+bunx playwright install
+
+# Run E2E tests
+bun run test:e2e
+
+# Run E2E tests with UI
+bun run test:e2e:ui
+```
+
+## Email Testing
+
+Emails sent by the application are captured by MailHog in development:
+
+1. Open http://localhost:40080 in your browser
+2. All emails (signup confirmation, password reset) appear here
+3. Emails are not actually sent - they're captured for testing

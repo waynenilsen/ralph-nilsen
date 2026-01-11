@@ -1,13 +1,17 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import type { Tenant, ApiKey } from "@/shared/types";
+import type { Tenant, ApiKey, User, Session } from "@/shared/types";
 import { validateApiKey, validateAdminApiKey } from "@/server/lib/auth";
+import { validateSession } from "@/server/lib/session";
 
 export interface Context {
   tenant: Tenant | null;
   apiKey: ApiKey | null;
+  user: User | null;
+  session: Session | null;
   isAdmin: boolean;
   headers: Headers;
+  cookies: { get: (name: string) => string | undefined };
 }
 
 /**
@@ -79,5 +83,38 @@ const requireAdmin = t.middleware(async ({ ctx, next }) => {
   });
 });
 
+/**
+ * Middleware that requires a valid session (cookie-based auth).
+ */
+const requireSession = t.middleware(async ({ ctx, next }) => {
+  const sessionToken = ctx.cookies.get("session_token");
+
+  if (!sessionToken) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Not authenticated",
+    });
+  }
+
+  const result = await validateSession(sessionToken);
+
+  if (!result) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid or expired session",
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      user: result.user,
+      session: result.session,
+      tenant: result.tenant,
+    },
+  });
+});
+
 export const protectedProcedure = t.procedure.use(requireTenant);
 export const adminProcedure = t.procedure.use(requireAdmin);
+export const sessionProcedure = t.procedure.use(requireSession);

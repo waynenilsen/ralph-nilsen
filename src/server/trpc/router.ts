@@ -2,6 +2,8 @@ import { router, publicProcedure } from "./init";
 import { tenantsRouter } from "./routers/tenants";
 import { todosRouter } from "./routers/todos";
 import { tagsRouter } from "./routers/tags";
+import { authRouter } from "./routers/auth";
+import { organizationsRouter } from "./routers/organizations";
 import { checkDatabaseHealth } from "@/server/db";
 
 export const appRouter = router({
@@ -14,6 +16,8 @@ export const appRouter = router({
     };
   }),
 
+  auth: authRouter,
+  organizations: organizationsRouter,
   tenants: tenantsRouter,
   todos: todosRouter,
   tags: tagsRouter,

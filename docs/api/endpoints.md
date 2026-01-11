@@ -26,6 +26,14 @@ Admin endpoints require the admin API key:
 Authorization: Bearer your_admin_api_key
 ```
 
+## Session Authentication
+
+For user-based authentication, the app uses HTTP-only cookies:
+
+- Cookie name: `session_token`
+- Contains UUID session token
+- Expires after 30 days of inactivity
+
 ## Health Check
 
 ### `health`
@@ -302,4 +310,191 @@ Get all todos with a specific tag.
 **Input**:
 ```json
 { "tagId": "uuid" }
+```
+
+## Authentication (Session-based)
+
+### `auth.signup`
+
+Register a new user account.
+
+**Authentication**: None required
+
+**Input**:
+```json
+{
+  "email": "user@example.com",
+  "username": "johndoe",
+  "password": "securepassword",
+  "confirmPassword": "securepassword"
+}
+```
+
+**Response**:
+```json
+{
+  "user": { "id": "uuid", "email": "...", "username": "...", ... },
+  "tenant": { "id": "uuid", "name": "...", ... },
+  "sessionToken": "uuid"
+}
+```
+
+### `auth.signin`
+
+Sign in to an existing account.
+
+**Authentication**: None required
+
+**Input**:
+```json
+{
+  "identifier": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Response**:
+```json
+{
+  "user": { "id": "uuid", "email": "...", "username": "...", ... },
+  "tenant": { "id": "uuid", "name": "...", ... },
+  "sessionToken": "uuid"
+}
+```
+
+### `auth.signout`
+
+Sign out and destroy the session.
+
+**Authentication**: Session cookie required
+
+**Response**:
+```json
+{ "success": true }
+```
+
+### `auth.me`
+
+Get the current user's information.
+
+**Authentication**: Session cookie required
+
+**Response**:
+```json
+{
+  "user": { "id": "uuid", "email": "...", "username": "...", ... },
+  "tenant": { "id": "uuid", "name": "...", ... }
+}
+```
+
+### `auth.requestPasswordReset`
+
+Request a password reset email.
+
+**Authentication**: None required
+
+**Input**:
+```json
+{ "email": "user@example.com" }
+```
+
+**Response**:
+```json
+{ "success": true }
+```
+
+### `auth.validateResetToken`
+
+Check if a password reset token is valid.
+
+**Authentication**: None required
+
+**Input**:
+```json
+{ "token": "uuid" }
+```
+
+**Response**:
+```json
+{ "valid": true }
+```
+
+### `auth.resetPassword`
+
+Reset password using a token.
+
+**Authentication**: None required
+
+**Input**:
+```json
+{
+  "token": "uuid",
+  "password": "newpassword",
+  "confirmPassword": "newpassword"
+}
+```
+
+**Response**:
+```json
+{ "success": true }
+```
+
+## Organizations
+
+### `organizations.list`
+
+List all organizations the user belongs to.
+
+**Authentication**: Session cookie required
+
+**Response**: Array of user organizations with tenant details
+
+### `organizations.create`
+
+Create a new organization.
+
+**Authentication**: Session cookie required
+
+**Input**:
+```json
+{ "name": "Organization Name" }
+```
+
+**Response**:
+```json
+{
+  "tenant": { "id": "uuid", "name": "...", ... },
+  "role": "owner"
+}
+```
+
+### `organizations.switch`
+
+Switch the active organization for the current session.
+
+**Authentication**: Session cookie required
+
+**Input**:
+```json
+{ "tenantId": "uuid" }
+```
+
+**Response**:
+```json
+{
+  "tenant": { "id": "uuid", "name": "...", ... }
+}
+```
+
+### `organizations.getCurrent`
+
+Get the currently active organization.
+
+**Authentication**: Session cookie required
+
+**Response**:
+```json
+{
+  "tenant": { "id": "uuid", "name": "...", ... }
+}
 ```

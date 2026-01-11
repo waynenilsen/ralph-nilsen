@@ -18,3 +18,14 @@ export function getTRPCClient(apiKey?: string) {
     ],
   });
 }
+
+export function getSessionTRPCClient() {
+  return trpc.createClient({
+    links: [
+      httpBatchLink({
+        url: "/api/trpc",
+        transformer: superjson,
+      }),
+    ],
+  });
+}

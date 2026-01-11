@@ -133,6 +133,81 @@ SET app.current_tenant_id = 'tenant-uuid';
 
 This is handled automatically by the `withTenantContext()` function in the application code.
 
+### users
+
+Stores user account information.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Unique identifier |
+| email | VARCHAR(255) | UNIQUE, NOT NULL | User email address |
+| username | VARCHAR(30) | UNIQUE, NOT NULL | Username for login |
+| password_hash | VARCHAR(255) | NOT NULL | Bcrypt hashed password |
+| email_verified | BOOLEAN | DEFAULT FALSE | Email verification status |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Creation timestamp |
+| updated_at | TIMESTAMPTZ | DEFAULT NOW() | Last update timestamp |
+
+**Constraints**:
+- Username must match pattern `^[a-zA-Z0-9_-]{3,30}$`
+
+**Indexes**:
+- `idx_users_email` on (email)
+- `idx_users_username` on (username)
+
+### user_tenants
+
+Junction table for user-organization membership.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Unique identifier |
+| user_id | UUID | FK -> users(id), NOT NULL | User reference |
+| tenant_id | UUID | FK -> tenants(id), NOT NULL | Organization reference |
+| role | VARCHAR(20) | CHECK IN ('owner', 'member', 'admin'), DEFAULT 'member' | User's role in org |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Creation timestamp |
+
+**Constraints**:
+- UNIQUE(user_id, tenant_id) - User can only have one role per organization
+
+**Indexes**:
+- `idx_user_tenants_user_id` on (user_id)
+- `idx_user_tenants_tenant_id` on (tenant_id)
+
+### sessions
+
+Stores user session information for authentication.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Unique identifier |
+| user_id | UUID | FK -> users(id), NOT NULL | User reference |
+| tenant_id | UUID | FK -> tenants(id), SET NULL on delete | Active organization |
+| session_token | UUID | UNIQUE, NOT NULL, DEFAULT gen_random_uuid() | Session identifier |
+| expires_at | TIMESTAMPTZ | NOT NULL | Session expiration time |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Creation timestamp |
+
+**Indexes**:
+- `idx_sessions_user_id` on (user_id)
+- `idx_sessions_session_token` on (session_token)
+- `idx_sessions_expires_at` on (expires_at)
+
+### password_reset_tokens
+
+Stores tokens for password reset flow.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Unique identifier |
+| user_id | UUID | FK -> users(id), NOT NULL | User reference |
+| token | UUID | UNIQUE, NOT NULL, DEFAULT gen_random_uuid() | Reset token |
+| expires_at | TIMESTAMPTZ | NOT NULL | Token expiration time |
+| used_at | TIMESTAMPTZ | | When token was used |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() | Creation timestamp |
+
+**Indexes**:
+- `idx_password_reset_tokens_token` on (token)
+- `idx_password_reset_tokens_user_id` on (user_id)
+
 ## Triggers
 
 ### update_updated_at_column
@@ -142,6 +217,11 @@ Automatically updates the `updated_at` column on row updates:
 ```sql
 CREATE TRIGGER update_todos_updated_at
     BEFORE UPDATE ON todos
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON users
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 ```

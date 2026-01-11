@@ -21,6 +21,15 @@ services:
     networks:
       - todo-network
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: todo-mailhog
+    ports:
+      - "40025:1025"  # SMTP server
+      - "40080:8025"  # Web UI
+    networks:
+      - todo-network
+
 volumes:
   postgres_data:
 
