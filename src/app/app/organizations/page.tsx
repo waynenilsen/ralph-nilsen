@@ -17,6 +17,7 @@ import {
   EmptyDescription,
 } from "@/components/ui/empty";
 import { InviteMemberDialog } from "@/client/components/features/organizations/InviteMemberDialog";
+import { PendingInvitationsList } from "@/client/components/features/organizations/PendingInvitationsList";
 
 function CreateOrgForm({ onSuccess }: { onSuccess: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -195,6 +196,8 @@ export default function OrganizationsPage() {
           </Empty>
         </Card>
       )}
+
+      {canInviteMembers && <PendingInvitationsList />}
     </div>
   );
 }
