@@ -23,7 +23,12 @@
       "Bash(gh issue create:*)",
       "Bash(gh project item-add:*)",
       "Bash(gh issue list:*)",
-      "Bash(gh project item-edit:*)"
+      "Bash(gh project item-edit:*)",
+      "Bash(docker-compose ps:*)",
+      "Bash(bunx playwright test:*)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Skill(cleanup)"
     ]
   }
 }

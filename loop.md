@@ -15,3 +15,5 @@ when to stop work: CRITICAL
 if creating tickets exit once the tickets have been created and you have committed your changes. your only job is creating tickets / prds in this mode
 
 if implementing, exit after you commit and push
+
+CRITICAL do not forget to commit and push at the very end CRITICAL
