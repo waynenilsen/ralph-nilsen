@@ -335,9 +335,13 @@ export function generateTestEmail(prefix: string = "test"): string {
 
 /**
  * Generate a unique test username.
+ * Username must be 3-30 characters, alphanumeric with _ and -.
  */
-export function generateTestUsername(prefix: string = "testuser"): string {
-  return `${prefix}${Date.now()}${Math.random().toString(36).slice(2)}`;
+export function generateTestUsername(prefix: string = "tu"): string {
+  // Use shorter timestamp (last 8 digits) + short random to stay under 30 chars
+  const ts = Date.now().toString().slice(-8);
+  const rand = Math.random().toString(36).slice(2, 6);
+  return `${prefix}${ts}${rand}`;
 }
 
 /**
