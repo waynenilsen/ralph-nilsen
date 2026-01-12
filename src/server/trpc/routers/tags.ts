@@ -1,18 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { router, protectedProcedure } from "../init";
+import { router, userProcedure } from "../init";
 import { withTenantContext } from "@/server/db";
 import { CreateTagSchema, UpdateTagSchema, type Tag, type Todo } from "@/shared/types";
 
 export const tagsRouter = router({
-  list: protectedProcedure.query(async ({ ctx }) => {
+  list: userProcedure.query(async ({ ctx }) => {
     return withTenantContext(ctx.tenant!.id, async (client) => {
       const { rows } = await client.query<Tag>("SELECT * FROM tags ORDER BY name ASC");
       return rows;
     });
   }),
 
-  get: protectedProcedure
+  get: userProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -24,7 +24,7 @@ export const tagsRouter = router({
       });
     }),
 
-  create: protectedProcedure
+  create: userProcedure
     .input(CreateTagSchema)
     .mutation(async ({ ctx, input }) => {
       const tenantId = ctx.tenant!.id;
@@ -44,7 +44,7 @@ export const tagsRouter = router({
       });
     }),
 
-  update: protectedProcedure
+  update: userProcedure
     .input(z.object({ id: z.string().uuid(), data: UpdateTagSchema }))
     .mutation(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -83,7 +83,7 @@ export const tagsRouter = router({
       });
     }),
 
-  delete: protectedProcedure
+  delete: userProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -95,7 +95,7 @@ export const tagsRouter = router({
       });
     }),
 
-  getTodos: protectedProcedure
+  getTodos: userProcedure
     .input(z.object({ tagId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {

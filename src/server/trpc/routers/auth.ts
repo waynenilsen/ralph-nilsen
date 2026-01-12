@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { router, publicProcedure, sessionProcedure } from "../init";
+import { router, publicProcedure, userProcedure } from "../init";
 import {
   SignupSchema,
   SigninSchema,
@@ -98,16 +98,23 @@ export const authRouter = router({
       };
     }),
 
-  signout: sessionProcedure
+  signout: userProcedure
     .mutation(async ({ ctx }) => {
+      // Signout only works for session-based auth
+      if (!ctx.session) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Signout requires session authentication. API keys don't have sessions to invalidate.",
+        });
+      }
       await deleteSession(ctx.session.session_token);
       return { success: true };
     }),
 
-  me: sessionProcedure
+  me: userProcedure
     .query(async ({ ctx }) => {
       return {
-        user: toUserPublic(ctx.user),
+        user: toUserPublic(ctx.user!),
         tenant: ctx.tenant,
       };
     }),

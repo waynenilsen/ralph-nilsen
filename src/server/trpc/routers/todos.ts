@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { router, sessionProcedure } from "../init";
+import { router, userProcedure } from "../init";
 import { withTenantContext, withTenantTransaction } from "@/server/db";
 import {
   CreateTodoSchema,
@@ -12,7 +12,7 @@ import {
 } from "@/shared/types";
 
 export const todosRouter = router({
-  list: sessionProcedure
+  list: userProcedure
     .input(TodoQuerySchema)
     .query(async ({ ctx, input }): Promise<PaginatedResult<Todo>> => {
       const tenantId = ctx.tenant!.id;
@@ -83,7 +83,7 @@ export const todosRouter = router({
       });
     }),
 
-  get: sessionProcedure
+  get: userProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -102,7 +102,7 @@ export const todosRouter = router({
       });
     }),
 
-  create: sessionProcedure
+  create: userProcedure
     .input(CreateTodoSchema)
     .mutation(async ({ ctx, input }) => {
       const tenantId = ctx.tenant!.id;
@@ -135,7 +135,7 @@ export const todosRouter = router({
       });
     }),
 
-  update: sessionProcedure
+  update: userProcedure
     .input(z.object({ id: z.string().uuid(), data: UpdateTodoSchema }))
     .mutation(async ({ ctx, input }) => {
       return withTenantTransaction(ctx.tenant!.id, async (client) => {
@@ -184,7 +184,7 @@ export const todosRouter = router({
       });
     }),
 
-  delete: sessionProcedure
+  delete: userProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -196,7 +196,7 @@ export const todosRouter = router({
       });
     }),
 
-  addTag: sessionProcedure
+  addTag: userProcedure
     .input(z.object({ todoId: z.string().uuid(), tagId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
@@ -211,7 +211,7 @@ export const todosRouter = router({
       });
     }),
 
-  removeTag: sessionProcedure
+  removeTag: userProcedure
     .input(z.object({ todoId: z.string().uuid(), tagId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {

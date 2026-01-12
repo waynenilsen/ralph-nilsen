@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { router, sessionProcedure } from "../init";
+import { router, userProcedure } from "../init";
 import {
   CreateOrganizationSchema,
   SwitchOrganizationSchema,
@@ -14,12 +14,12 @@ import { adminPool } from "@/server/db";
 import type { Tenant } from "@/shared/types";
 
 export const organizationsRouter = router({
-  list: sessionProcedure
+  list: userProcedure
     .query(async ({ ctx }) => {
       return getUserOrganizations(ctx.user.id);
     }),
 
-  create: sessionProcedure
+  create: userProcedure
     .input(CreateOrganizationSchema)
     .mutation(async ({ ctx, input }) => {
       const { tenant, userTenant } = await createOrganization(
@@ -33,11 +33,20 @@ export const organizationsRouter = router({
       };
     }),
 
-  switch: sessionProcedure
+  switch: userProcedure
     .input(SwitchOrganizationSchema)
     .mutation(async ({ ctx, input }) => {
+      // Switch organization only works for session-based auth (web users)
+      // API key users have a fixed tenant context
+      if (!ctx.session) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Organization switching requires session authentication. API keys have a fixed tenant context.",
+        });
+      }
+
       // Verify user belongs to the tenant
-      const belongs = await userBelongsToTenant(ctx.user.id, input.tenantId);
+      const belongs = await userBelongsToTenant(ctx.user!.id, input.tenantId);
 
       if (!belongs) {
         throw new TRPCError({
@@ -75,7 +84,7 @@ export const organizationsRouter = router({
       }
     }),
 
-  getCurrent: sessionProcedure
+  getCurrent: userProcedure
     .query(async ({ ctx }) => {
       return {
         tenant: ctx.tenant,

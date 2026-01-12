@@ -87,6 +87,7 @@ export type UpdateTagInput = z.infer<typeof UpdateTagSchema>;
 export interface ApiKey {
   id: string;
   tenant_id: string;
+  user_id: string | null;
   key_hash: string;
   name: string | null;
   last_used_at: Date | null;
