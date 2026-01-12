@@ -16,6 +16,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
+import { InviteMemberDialog } from "@/client/components/features/organizations/InviteMemberDialog";
 
 function CreateOrgForm({ onSuccess }: { onSuccess: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -106,6 +107,13 @@ export default function OrganizationsPage() {
     },
   });
 
+  // Find current user's role in the current organization
+  const currentOrgMembership = orgs?.find(
+    (org) => org.tenant_id === currentOrg?.tenant?.id
+  );
+  const canInviteMembers =
+    currentOrgMembership?.role === "owner" || currentOrgMembership?.role === "admin";
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -123,7 +131,12 @@ export default function OrganizationsPage() {
             Manage your organizations and switch between them.
           </p>
         </div>
-        <CreateOrgForm onSuccess={() => utils.organizations.list.invalidate()} />
+        <div className="flex gap-2">
+          {canInviteMembers && currentOrg?.tenant && (
+            <InviteMemberDialog organizationName={currentOrg.tenant.name} />
+          )}
+          <CreateOrgForm onSuccess={() => utils.organizations.list.invalidate()} />
+        </div>
       </div>
 
       {orgs && orgs.length > 0 ? (

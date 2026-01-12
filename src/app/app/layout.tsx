@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { TRPCSessionProvider } from "@/client/components/TRPCSessionProvider";
 import { trpc } from "@/client/lib/trpc";
+import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -252,6 +253,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <TRPCSessionProvider>
       <AppLayoutContent>{children}</AppLayoutContent>
+      <Toaster />
     </TRPCSessionProvider>
   );
 }
