@@ -42,7 +42,8 @@
       "Bash(PGPASSWORD=app_pass psql:*)",
       "Bash(DATABASE_URL=\"postgresql://app_user:app_pass@localhost:40001/todo_db\" bun test:*)",
       "Bash(git rm:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(grep:*)"
     ]
   }
 }

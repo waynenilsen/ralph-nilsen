@@ -14,6 +14,7 @@ import type {
 } from "@/shared/types";
 import { checkOrganizationRole, addUserToOrganization } from "@/server/lib/session";
 import { adminPool } from "@/server/db";
+import { sendInvitationEmail, sendInvitationAcceptedEmail } from "@/server/lib/email";
 
 const INVITATION_EXPIRY_DAYS = 7;
 
@@ -80,7 +81,20 @@ export const invitationsRouter = router({
         [ctx.tenant.id, input.email.toLowerCase(), input.role, ctx.user.id, expiresAt]
       );
 
-      return rows[0]!;
+      const invitation = rows[0]!;
+
+      // Send invitation email (fire-and-forget)
+      sendInvitationEmail({
+        email: invitation.email,
+        organizationName: ctx.tenant.name,
+        inviterName: ctx.user.username,
+        role: invitation.role,
+        token: invitation.token,
+      }).catch((err) => {
+        console.error("Failed to send invitation email:", err);
+      });
+
+      return invitation;
     } finally {
       client.release();
     }
@@ -207,13 +221,14 @@ export const invitationsRouter = router({
     try {
       await client.query("BEGIN");
 
-      // Get the invitation
+      // Get the invitation with inviter details
       const { rows: invitations } = await client.query<
-        OrganizationInvitation & { organization_name: string }
+        OrganizationInvitation & { organization_name: string; inviter_email: string }
       >(
-        `SELECT oi.*, t.name as organization_name
+        `SELECT oi.*, t.name as organization_name, u.email as inviter_email
          FROM organization_invitations oi
          JOIN tenants t ON t.id = oi.tenant_id
+         JOIN users u ON u.id = oi.invited_by
          WHERE oi.token = $1
          FOR UPDATE`,
         [input.token]
@@ -282,6 +297,16 @@ export const invitationsRouter = router({
       );
 
       await client.query("COMMIT");
+
+      // Send invitation accepted notification to inviter (fire-and-forget)
+      sendInvitationAcceptedEmail({
+        inviterEmail: invitation.inviter_email,
+        newMemberName: ctx.user.username,
+        newMemberEmail: ctx.user.email,
+        organizationName: invitation.organization_name,
+      }).catch((err) => {
+        console.error("Failed to send invitation accepted email:", err);
+      });
 
       return {
         success: true,

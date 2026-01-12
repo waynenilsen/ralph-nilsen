@@ -122,3 +122,89 @@ The Todo App Team`,
 </html>`,
   });
 }
+
+export async function sendInvitationEmail(params: {
+  email: string;
+  organizationName: string;
+  inviterName: string;
+  role: string;
+  token: string;
+}): Promise<void> {
+  const { email, organizationName, inviterName, role, token } = params;
+  const inviteUrl = `${APP_URL}/invite/${token}`;
+
+  await sendEmail({
+    to: email,
+    subject: `You've been invited to join ${organizationName}`,
+    text: `Hi,
+
+${inviterName} has invited you to join ${organizationName} as a ${role}.
+
+Click the link below to accept this invitation:
+
+${inviteUrl}
+
+This invitation will expire in 7 days.
+
+If you don't want to join this organization, you can safely ignore this email.
+
+Best regards,
+The Todo App Team`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h1 style="color: #2563eb;">You're Invited!</h1>
+  <p>Hi,</p>
+  <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> as a <strong>${role}</strong>.</p>
+  <p style="text-align: center; margin: 30px 0;">
+    <a href="${inviteUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Accept Invitation</a>
+  </p>
+  <p style="font-size: 14px; color: #666;">This invitation will expire in 7 days.</p>
+  <p style="font-size: 14px; color: #666;">If you don't want to join this organization, you can safely ignore this email.</p>
+  <p>Best regards,<br>The Todo App Team</p>
+</body>
+</html>`,
+  });
+}
+
+export async function sendInvitationAcceptedEmail(params: {
+  inviterEmail: string;
+  newMemberName: string;
+  newMemberEmail: string;
+  organizationName: string;
+}): Promise<void> {
+  const { inviterEmail, newMemberName, newMemberEmail, organizationName } = params;
+
+  await sendEmail({
+    to: inviterEmail,
+    subject: `${newMemberName} has joined ${organizationName}`,
+    text: `Hi,
+
+Great news! ${newMemberName} (${newMemberEmail}) has accepted your invitation and joined ${organizationName}.
+
+They now have access to the organization and can start collaborating.
+
+Best regards,
+The Todo App Team`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h1 style="color: #2563eb;">New Team Member!</h1>
+  <p>Hi,</p>
+  <p>Great news! <strong>${newMemberName}</strong> (${newMemberEmail}) has accepted your invitation and joined <strong>${organizationName}</strong>.</p>
+  <p>They now have access to the organization and can start collaborating.</p>
+  <p>Best regards,<br>The Todo App Team</p>
+</body>
+</html>`,
+  });
+}
