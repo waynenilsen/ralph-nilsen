@@ -38,7 +38,10 @@
       "Bash(docker compose:*)",
       "Bash(gh project view:*)",
       "Bash(bunx playwright install:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(PGPASSWORD=app_pass psql:*)",
+      "Bash(DATABASE_URL=\"postgresql://app_user:app_pass@localhost:40001/todo_db\" bun test:*)",
+      "Bash(git rm:*)"
     ]
   }
 }
