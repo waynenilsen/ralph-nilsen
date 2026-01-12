@@ -312,3 +312,32 @@ export const DeclineInvitationSchema = z.object({
 });
 
 export type DeclineInvitationInput = z.infer<typeof DeclineInvitationSchema>;
+
+// Member management schemas
+export const RemoveMemberSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+});
+
+export type RemoveMemberInput = z.infer<typeof RemoveMemberSchema>;
+
+export const UpdateMemberRoleSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+  role: z.enum(["admin", "member"]),
+});
+
+export type UpdateMemberRoleInput = z.infer<typeof UpdateMemberRoleSchema>;
+
+export const TransferOwnershipSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+});
+
+export type TransferOwnershipInput = z.infer<typeof TransferOwnershipSchema>;
+
+// Member info returned from getMembers
+export interface OrganizationMember {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  joinedAt: Date;
+}

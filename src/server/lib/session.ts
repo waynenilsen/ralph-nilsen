@@ -467,3 +467,125 @@ export async function resetPassword(token: string, newPassword: string): Promise
     client.release();
   }
 }
+
+// Organization member management
+
+export interface OrganizationMemberInfo {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  joinedAt: Date;
+}
+
+export async function getOrganizationMembers(tenantId: string): Promise<OrganizationMemberInfo[]> {
+  const client = await adminPool.connect();
+  try {
+    const { rows } = await client.query<{
+      user_id: string;
+      email: string;
+      username: string;
+      role: UserRole;
+      created_at: Date;
+    }>(
+      `SELECT u.id as user_id, u.email, u.username, ut.role, ut.created_at
+       FROM user_tenants ut
+       JOIN users u ON u.id = ut.user_id
+       WHERE ut.tenant_id = $1
+       ORDER BY ut.created_at ASC`,
+      [tenantId]
+    );
+
+    return rows.map((row) => ({
+      id: row.user_id,
+      email: row.email,
+      username: row.username,
+      role: row.role,
+      joinedAt: row.created_at,
+    }));
+  } finally {
+    client.release();
+  }
+}
+
+export async function removeMemberFromOrganization(
+  tenantId: string,
+  userId: string
+): Promise<boolean> {
+  const client = await adminPool.connect();
+  try {
+    const { rowCount } = await client.query(
+      `DELETE FROM user_tenants WHERE tenant_id = $1 AND user_id = $2`,
+      [tenantId, userId]
+    );
+    return (rowCount ?? 0) > 0;
+  } finally {
+    client.release();
+  }
+}
+
+export async function updateMemberRole(
+  tenantId: string,
+  userId: string,
+  role: "admin" | "member"
+): Promise<boolean> {
+  const client = await adminPool.connect();
+  try {
+    const { rowCount } = await client.query(
+      `UPDATE user_tenants SET role = $1 WHERE tenant_id = $2 AND user_id = $3`,
+      [role, tenantId, userId]
+    );
+    return (rowCount ?? 0) > 0;
+  } finally {
+    client.release();
+  }
+}
+
+export async function transferOwnership(
+  tenantId: string,
+  currentOwnerId: string,
+  newOwnerId: string
+): Promise<boolean> {
+  const client = await adminPool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Demote current owner to admin
+    await client.query(
+      `UPDATE user_tenants SET role = 'admin' WHERE tenant_id = $1 AND user_id = $2`,
+      [tenantId, currentOwnerId]
+    );
+
+    // Promote new owner
+    const { rowCount } = await client.query(
+      `UPDATE user_tenants SET role = 'owner' WHERE tenant_id = $1 AND user_id = $2`,
+      [tenantId, newOwnerId]
+    );
+
+    if ((rowCount ?? 0) === 0) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function getOrganizationMemberCount(tenantId: string): Promise<number> {
+  const client = await adminPool.connect();
+  try {
+    const { rows } = await client.query<{ count: string }>(
+      `SELECT COUNT(*) as count FROM user_tenants WHERE tenant_id = $1`,
+      [tenantId]
+    );
+    return parseInt(rows[0]!.count, 10);
+  } finally {
+    client.release();
+  }
+}
