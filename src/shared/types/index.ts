@@ -250,3 +250,65 @@ export interface UserOrganization {
   created_at: Date;
   tenant: Tenant;
 }
+
+// Organization invitation types
+export type InvitationStatus = "pending" | "accepted" | "declined" | "revoked";
+export type InvitationRole = "admin" | "member";
+
+export interface OrganizationInvitation {
+  id: string;
+  tenant_id: string;
+  email: string;
+  role: InvitationRole;
+  token: string;
+  invited_by: string;
+  expires_at: Date;
+  status: InvitationStatus;
+  accepted_at: Date | null;
+  created_at: Date;
+}
+
+export interface OrganizationInvitationWithInviter extends OrganizationInvitation {
+  inviter_name: string;
+  inviter_email: string;
+}
+
+export interface OrganizationInvitationPublic {
+  organizationName: string;
+  inviterName: string;
+  role: InvitationRole;
+  expiresAt: Date;
+  isExpired: boolean;
+  status: InvitationStatus;
+}
+
+export const CreateInvitationSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  role: z.enum(["admin", "member"]).default("member"),
+});
+
+export type CreateInvitationInput = z.infer<typeof CreateInvitationSchema>;
+
+export const RevokeInvitationSchema = z.object({
+  invitationId: z.string().uuid("Invalid invitation ID"),
+});
+
+export type RevokeInvitationInput = z.infer<typeof RevokeInvitationSchema>;
+
+export const GetInvitationByTokenSchema = z.object({
+  token: z.string().uuid("Invalid token"),
+});
+
+export type GetInvitationByTokenInput = z.infer<typeof GetInvitationByTokenSchema>;
+
+export const AcceptInvitationSchema = z.object({
+  token: z.string().uuid("Invalid token"),
+});
+
+export type AcceptInvitationInput = z.infer<typeof AcceptInvitationSchema>;
+
+export const DeclineInvitationSchema = z.object({
+  token: z.string().uuid("Invalid token"),
+});
+
+export type DeclineInvitationInput = z.infer<typeof DeclineInvitationSchema>;
