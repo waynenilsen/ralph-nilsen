@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun install:*)",
+      "Bash(bunx create-next-app@latest:*)",
+      "Bash(bun add:*)",
+      "Bash(bun run type-check:*)",
+      "Bash(bun run build:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(bun run db:migrate:*)",
+      "Bash(bun run:*)",
+      "Bash(bun test:*)",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(docker ps:*)",
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(bunx shadcn@latest init:*)",
+      "Bash(bunx shadcn@latest add:*)"
+    ]
+  }
+}
