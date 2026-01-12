@@ -28,7 +28,10 @@
       "Bash(bunx playwright test:*)",
       "Bash(git add:*)",
       "Bash(git restore:*)",
-      "Skill(cleanup)"
+      "Skill(cleanup)",
+      "Bash(git commit:*)",
+      "Bash(gh issue view:*)",
+      "Bash(git push)"
     ]
   }
 }

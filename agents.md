@@ -20,3 +20,5 @@ Before exiting a ralph loop, always:
    git add -A
    git commit -m "your commit message"
    ```
+
+if you are prompted with @loop.md re read @loop.md at the end and make sure you followed the directions carefully
