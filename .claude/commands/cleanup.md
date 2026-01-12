@@ -82,11 +82,46 @@ bun test
 
 If any checks fail, revert the problematic changes and try a different approach.
 
-### Step 6: Report Summary
+### Step 6: Commit and Push Changes
+
+After verification passes, commit and push the simplified changes using Conventional Commits format:
+
+```bash
+git add -A
+git commit -m "refactor: simplify code without changing functionality" -m "Closes #<ticket-number>"
+git push
+```
+
+**Note:** Replace `<ticket-number>` with the actual GitHub issue number (e.g., `Closes #123`). GitHub will automatically close the issue when this commit is merged. If there's no associated ticket, omit the second `-m` flag.
+
+**Commit Message Guidelines:**
+- Use `refactor:` type for code simplification that doesn't change behavior
+- Use `style:` type if only formatting/whitespace changes
+- Include scope if changes are limited to a specific area (e.g., `refactor(auth): simplify validation logic`)
+- Write in imperative, present tense
+- Keep description concise (50-72 characters)
+- Add body if additional context is needed
+- **Include `Closes #<ticket-number>` in the commit message footer to automatically close GitHub issues when merged**
+
+**Examples:**
+- `refactor: simplify conditional logic and extract duplicate code`
+- `refactor(db): consolidate duplicate query patterns`
+- `style: format code and remove unnecessary whitespace`
+- Multi-line with issue reference:
+  ```
+  refactor: simplify code without changing functionality
+  
+  Closes #123
+  ```
+
+For detailed guidelines, see `conventional-commit.md` in the project root.
+
+### Step 7: Report Summary
 
 Provide a summary of what was simplified:
 - Files modified
 - Types of simplifications made
+- Commit message used
 - Any opportunities skipped and why
 
 ## Arguments
