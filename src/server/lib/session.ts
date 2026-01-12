@@ -7,6 +7,7 @@ import type {
   UserTenant,
   Tenant,
   UserOrganization,
+  UserRole,
 } from "@/shared/types";
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "12", 10);
@@ -308,6 +309,51 @@ export async function userBelongsToTenant(userId: string, tenantId: string): Pro
       [userId, tenantId]
     );
     return rows.length > 0;
+  } finally {
+    client.release();
+  }
+}
+
+export async function getUserRoleInTenant(
+  userId: string,
+  tenantId: string
+): Promise<UserRole | null> {
+  const client = await adminPool.connect();
+  try {
+    const { rows } = await client.query<{ role: UserRole }>(
+      `SELECT ut.role FROM user_tenants ut
+       JOIN tenants t ON t.id = ut.tenant_id
+       WHERE ut.user_id = $1 AND ut.tenant_id = $2 AND t.is_active = true`,
+      [userId, tenantId]
+    );
+    return rows[0]?.role || null;
+  } finally {
+    client.release();
+  }
+}
+
+export async function checkOrganizationRole(
+  userId: string,
+  tenantId: string,
+  allowedRoles: UserRole[]
+): Promise<boolean> {
+  const role = await getUserRoleInTenant(userId, tenantId);
+  return !!role && allowedRoles.includes(role);
+}
+
+export async function addUserToOrganization(
+  userId: string,
+  tenantId: string,
+  role: "admin" | "member"
+): Promise<UserTenant> {
+  const client = await adminPool.connect();
+  try {
+    const { rows } = await client.query<UserTenant>(
+      `INSERT INTO user_tenants (user_id, tenant_id, role)
+       VALUES ($1, $2, $3) RETURNING *`,
+      [userId, tenantId, role]
+    );
+    return rows[0]!;
   } finally {
     client.release();
   }

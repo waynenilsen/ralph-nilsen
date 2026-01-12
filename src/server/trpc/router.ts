@@ -4,6 +4,7 @@ import { todosRouter } from "./routers/todos";
 import { tagsRouter } from "./routers/tags";
 import { authRouter } from "./routers/auth";
 import { organizationsRouter } from "./routers/organizations";
+import { invitationsRouter } from "./routers/invitations";
 import { checkDatabaseHealth } from "@/server/db";
 
 export const appRouter = router({
@@ -18,6 +19,7 @@ export const appRouter = router({
 
   auth: authRouter,
   organizations: organizationsRouter,
+  invitations: invitationsRouter,
   tenants: tenantsRouter,
   todos: todosRouter,
   tags: tagsRouter,
