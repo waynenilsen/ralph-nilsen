@@ -13,7 +13,6 @@ import {
   createTestUser,
   createTestTenant,
   createTestUserTenant,
-  recordExists,
   generateTestEmail,
   generateTestUsername,
 } from "../../helpers";

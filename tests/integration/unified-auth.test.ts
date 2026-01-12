@@ -466,7 +466,7 @@ describe("Unified Auth - Authentication Method Parity", () => {
     it("should return consistent user info from both auth methods", async () => {
       await withTestClient(async (client) => {
         const tenantId = await createTestTenant(client);
-        const { userId, email, username } = await createTestUser(client);
+        const { userId } = await createTestUser(client);
         await createTestUserTenant(client, userId, tenantId);
         const sessionToken = await createTestSession(client, userId, tenantId);
         const { apiKey } = await createTestApiKey(client, tenantId, userId);
@@ -586,7 +586,7 @@ describe("Unified Auth - Context Verification", () => {
   it("both methods provide consistent user info", async () => {
     await withTestClient(async (client) => {
       const tenantId = await createTestTenant(client);
-      const { userId, email, username } = await createTestUser(client);
+      const { userId } = await createTestUser(client);
       await createTestUserTenant(client, userId, tenantId);
       const sessionToken = await createTestSession(client, userId, tenantId);
       const { apiKey } = await createTestApiKey(client, tenantId, userId);

@@ -4,11 +4,10 @@
  * This runs once before all E2E tests to prepare the test environment.
  */
 
-import { FullConfig } from "@playwright/test";
 import { clearMailHogEmails, checkMailHogConnection } from "../helpers/email";
-import { withTestClient, cleanupTestData, getTestPool, closeTestPool } from "../helpers/setup";
+import { withTestClient, cleanupTestData, closeTestPool } from "../helpers/setup";
 
-async function globalSetup(_config: FullConfig): Promise<void> {
+async function globalSetup(): Promise<void> {
   console.log("\n🎭 Playwright Global Setup\n");
 
   // Verify database connection

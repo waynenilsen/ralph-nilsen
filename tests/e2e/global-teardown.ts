@@ -4,10 +4,9 @@
  * This runs once after all E2E tests to clean up the test environment.
  */
 
-import { FullConfig } from "@playwright/test";
 import { withTestClient, cleanupTestData, closeTestPool } from "../helpers/setup";
 
-async function globalTeardown(_config: FullConfig): Promise<void> {
+async function globalTeardown(): Promise<void> {
   console.log("\n🧹 Playwright Global Teardown\n");
 
   // Clean up test data

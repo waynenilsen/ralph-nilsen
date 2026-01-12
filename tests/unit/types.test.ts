@@ -1,10 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import {
-  CreateTodoSchema,
-  UpdateTodoSchema,
-  CreateTagSchema,
-  TodoQuerySchema,
-} from "@/shared/types";
+import { CreateTodoSchema, CreateTagSchema, TodoQuerySchema } from "@/shared/types";
 
 describe("Zod Schemas", () => {
   describe("CreateTodoSchema", () => {

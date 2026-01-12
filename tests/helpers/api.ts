@@ -5,7 +5,7 @@
  * that can be used in integration tests without going through HTTP.
  */
 
-import { appRouter, type AppRouter } from "@/server/trpc/router";
+import { appRouter } from "@/server/trpc/router";
 import type { Context } from "@/server/trpc/init";
 import type { Tenant, User, Session, ApiKey } from "@/shared/types";
 

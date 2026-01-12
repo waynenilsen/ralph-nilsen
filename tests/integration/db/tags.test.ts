@@ -425,14 +425,13 @@ describe("Tag Database Operations", () => {
 
         const todo1Id = await createTestTodo(client, tenantId, { title: "Todo 1" });
         const todo2Id = await createTestTodo(client, tenantId, { title: "Todo 2" });
-        const todo3Id = await createTestTodo(client, tenantId, { title: "Todo 3" });
+        await createTestTodo(client, tenantId, { title: "Todo 3" }); // todo3 has no tags
 
         const tag1Id = await createTestTag(client, tenantId, { name: "Tag1" });
         const tag2Id = await createTestTag(client, tenantId, { name: "Tag2" });
 
         await addTagToTodo(client, tenantId, todo1Id, tag1Id);
         await addTagToTodo(client, tenantId, todo2Id, tag2Id);
-        // todo3 has no tags
 
         await setTenantContext(client, tenantId);
         const { rows } = await client.query(

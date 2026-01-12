@@ -470,7 +470,7 @@ describe("Auth Router - Password Reset", () => {
 
   it("should validate password reset token", async () => {
     await withTestClient(async (client) => {
-      const { userId, email } = await createTestUser(client);
+      const { userId } = await createTestUser(client);
       const token = await createTestPasswordResetToken(client, userId);
 
       const caller = createPublicCaller();
@@ -482,7 +482,7 @@ describe("Auth Router - Password Reset", () => {
 
   it("should reject expired password reset token", async () => {
     await withTestClient(async (client) => {
-      const { userId, email } = await createTestUser(client);
+      const { userId } = await createTestUser(client);
       const token = await createExpiredPasswordResetToken(client, userId);
 
       const caller = createPublicCaller();
