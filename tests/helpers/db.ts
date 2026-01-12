@@ -124,10 +124,7 @@ export async function checkDatabaseConnection(): Promise<boolean> {
 /**
  * Get the count of records in a table (respects RLS if tenant context is set).
  */
-export async function getTableCount(
-  client: PoolClient,
-  tableName: string
-): Promise<number> {
+export async function getTableCount(client: PoolClient, tableName: string): Promise<number> {
   const { rows } = await client.query(`SELECT COUNT(*) as count FROM ${tableName}`);
   return parseInt(rows[0].count, 10);
 }
@@ -140,10 +137,7 @@ export async function recordExists(
   tableName: string,
   id: string
 ): Promise<boolean> {
-  const { rows } = await client.query(
-    `SELECT 1 FROM ${tableName} WHERE id = $1`,
-    [id]
-  );
+  const { rows } = await client.query(`SELECT 1 FROM ${tableName} WHERE id = $1`, [id]);
   return rows.length > 0;
 }
 
@@ -162,10 +156,7 @@ export async function deleteRecord(
  * Truncate tables for fast cleanup (bypasses RLS).
  * Use with caution - clears all data in the specified tables.
  */
-export async function truncateTables(
-  client: PoolClient,
-  tableNames: string[]
-): Promise<void> {
+export async function truncateTables(client: PoolClient, tableNames: string[]): Promise<void> {
   await client.query(`TRUNCATE ${tableNames.join(", ")} CASCADE`);
 }
 

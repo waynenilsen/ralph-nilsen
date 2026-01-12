@@ -40,10 +40,7 @@ describe("Tenant Database Operations", () => {
         expect(tenantId).toBeDefined();
         expect(typeof tenantId).toBe("string");
 
-        const { rows } = await client.query(
-          "SELECT * FROM tenants WHERE id = $1",
-          [tenantId]
-        );
+        const { rows } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
 
         expect(rows).toHaveLength(1);
         expect(rows[0].slug).toBe(slug);
@@ -114,10 +111,7 @@ describe("Tenant Database Operations", () => {
         const slug = `test-read-slug-${Date.now()}`;
         const tenantId = await createTestTenant(client, slug);
 
-        const { rows } = await client.query(
-          "SELECT id, name FROM tenants WHERE slug = $1",
-          [slug]
-        );
+        const { rows } = await client.query("SELECT id, name FROM tenants WHERE slug = $1", [slug]);
 
         expect(rows).toHaveLength(1);
         expect(rows[0].id).toBe(tenantId);
@@ -126,10 +120,9 @@ describe("Tenant Database Operations", () => {
 
     it("should return empty for non-existent tenant", async () => {
       await withTestClient(async (client) => {
-        const { rows } = await client.query(
-          "SELECT * FROM tenants WHERE id = $1",
-          ["00000000-0000-0000-0000-000000000000"]
-        );
+        const { rows } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+          "00000000-0000-0000-0000-000000000000",
+        ]);
 
         expect(rows).toHaveLength(0);
       });
@@ -143,15 +136,9 @@ describe("Tenant Database Operations", () => {
         const tenantId = await createTestTenant(client, slug);
 
         const newName = "Updated Tenant Name";
-        await client.query(
-          "UPDATE tenants SET name = $1 WHERE id = $2",
-          [newName, tenantId]
-        );
+        await client.query("UPDATE tenants SET name = $1 WHERE id = $2", [newName, tenantId]);
 
-        const { rows } = await client.query(
-          "SELECT name FROM tenants WHERE id = $1",
-          [tenantId]
-        );
+        const { rows } = await client.query("SELECT name FROM tenants WHERE id = $1", [tenantId]);
 
         expect(rows[0].name).toBe(newName);
       });
@@ -162,15 +149,11 @@ describe("Tenant Database Operations", () => {
         const slug = `test-deactivate-${Date.now()}`;
         const tenantId = await createTestTenant(client, slug);
 
-        await client.query(
-          "UPDATE tenants SET is_active = $1 WHERE id = $2",
-          [false, tenantId]
-        );
+        await client.query("UPDATE tenants SET is_active = $1 WHERE id = $2", [false, tenantId]);
 
-        const { rows } = await client.query(
-          "SELECT is_active FROM tenants WHERE id = $1",
-          [tenantId]
-        );
+        const { rows } = await client.query("SELECT is_active FROM tenants WHERE id = $1", [
+          tenantId,
+        ]);
 
         expect(rows[0].is_active).toBe(false);
       });
@@ -189,15 +172,14 @@ describe("Tenant Database Operations", () => {
         // Small delay to ensure timestamp difference
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        await client.query(
-          "UPDATE tenants SET name = $1 WHERE id = $2",
-          ["Changed Name", tenantId]
-        );
+        await client.query("UPDATE tenants SET name = $1 WHERE id = $2", [
+          "Changed Name",
+          tenantId,
+        ]);
 
-        const { rows: after } = await client.query(
-          "SELECT updated_at FROM tenants WHERE id = $1",
-          [tenantId]
-        );
+        const { rows: after } = await client.query("SELECT updated_at FROM tenants WHERE id = $1", [
+          tenantId,
+        ]);
 
         expect(after[0].updated_at.getTime()).toBeGreaterThan(before[0].updated_at.getTime());
       });
@@ -228,10 +210,7 @@ describe("Tenant Database Operations", () => {
 
         // Verify todo exists (use tenant context due to RLS)
         await setTenantContext(client, tenantId);
-        const { rows: before } = await client.query(
-          "SELECT id FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows: before } = await client.query("SELECT id FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
         expect(before).toHaveLength(1);
 
@@ -239,10 +218,7 @@ describe("Tenant Database Operations", () => {
         await client.query("DELETE FROM tenants WHERE id = $1", [tenantId]);
 
         // Verify todo is also deleted (no tenant context needed - will return 0 due to cascade)
-        const { rows: after } = await client.query(
-          "SELECT id FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows: after } = await client.query("SELECT id FROM todos WHERE id = $1", [todoId]);
         expect(after).toHaveLength(0);
       });
     });
@@ -258,10 +234,7 @@ describe("Tenant Database Operations", () => {
 
         // Verify tag exists (use tenant context due to RLS)
         await setTenantContext(client, tenantId);
-        const { rows: before } = await client.query(
-          "SELECT id FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows: before } = await client.query("SELECT id FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
         expect(before).toHaveLength(1);
 
@@ -269,10 +242,7 @@ describe("Tenant Database Operations", () => {
         await client.query("DELETE FROM tenants WHERE id = $1", [tenantId]);
 
         // Verify tag is also deleted (no tenant context needed - will return 0 due to cascade)
-        const { rows: after } = await client.query(
-          "SELECT id FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows: after } = await client.query("SELECT id FROM tags WHERE id = $1", [tagId]);
         expect(after).toHaveLength(0);
       });
     });
@@ -287,10 +257,10 @@ describe("Tenant Database Operations", () => {
 
         // Link todo and tag (within tenant context)
         await setTenantContext(client, tenantId);
-        await client.query(
-          "INSERT INTO todo_tags (todo_id, tag_id) VALUES ($1, $2)",
-          [todoId, tagId]
-        );
+        await client.query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($1, $2)", [
+          todoId,
+          tagId,
+        ]);
 
         // Verify todo_tags entry exists
         const { rows: before } = await client.query(

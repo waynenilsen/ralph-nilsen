@@ -12,15 +12,17 @@ import type { Tenant, User, Session, ApiKey } from "@/shared/types";
 /**
  * Create a mock context for tRPC testing.
  */
-export function createMockContext(options: {
-  tenant?: Tenant | null;
-  user?: User | null;
-  session?: Session | null;
-  apiKey?: ApiKey | null;
-  isAdmin?: boolean;
-  cookies?: Record<string, string>;
-  authHeader?: string;
-} = {}): Context {
+export function createMockContext(
+  options: {
+    tenant?: Tenant | null;
+    user?: User | null;
+    session?: Session | null;
+    apiKey?: ApiKey | null;
+    isAdmin?: boolean;
+    cookies?: Record<string, string>;
+    authHeader?: string;
+  } = {}
+): Context {
   const cookies = options.cookies || {};
   const headers = new Headers();
 
@@ -54,11 +56,7 @@ export function createPublicCaller() {
  * Create a tRPC caller authenticated with a session.
  * Use for testing session-based authentication.
  */
-export function createSessionCaller(options: {
-  user: User;
-  tenant: Tenant;
-  session: Session;
-}) {
+export function createSessionCaller(options: { user: User; tenant: Tenant; session: Session }) {
   const ctx = createMockContext({
     user: options.user,
     tenant: options.tenant,

@@ -19,11 +19,7 @@ import {
   createTestApiKey,
   generateTestSlug,
 } from "../../helpers";
-import {
-  createAdminCaller,
-  createSessionCaller,
-  createPublicCaller,
-} from "../../helpers/api";
+import { createAdminCaller, createSessionCaller, createPublicCaller } from "../../helpers/api";
 
 describe("Tenants Router - Admin List", () => {
   beforeAll(() => {
@@ -156,9 +152,9 @@ describe("Tenants Router - Admin Create", () => {
 
       const caller = createAdminCaller();
 
-      await expect(
-        caller.tenants.create({ name: "Duplicate Slug", slug })
-      ).rejects.toThrow("A tenant with this slug already exists");
+      await expect(caller.tenants.create({ name: "Duplicate Slug", slug })).rejects.toThrow(
+        "A tenant with this slug already exists"
+      );
     });
   });
 });
@@ -218,9 +214,9 @@ describe("Tenants Router - Admin Update", () => {
 
       const caller = createAdminCaller();
 
-      await expect(
-        caller.tenants.update({ id: tenantId, data: {} })
-      ).rejects.toThrow("No fields to update");
+      await expect(caller.tenants.update({ id: tenantId, data: {} })).rejects.toThrow(
+        "No fields to update"
+      );
     });
   });
 
@@ -422,9 +418,7 @@ describe("Tenants Router - Access Control", () => {
 
   it("should reject non-admin access to create", async () => {
     const caller = createPublicCaller();
-    await expect(
-      caller.tenants.create({ name: "Test", slug: "test" })
-    ).rejects.toThrow();
+    await expect(caller.tenants.create({ name: "Test", slug: "test" })).rejects.toThrow();
   });
 
   it("should reject non-admin access to update", async () => {
@@ -465,8 +459,13 @@ describe("Tenants Router - Access Control", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],

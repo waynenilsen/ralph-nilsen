@@ -7,10 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   // Use 1 worker to avoid race conditions with database cleanup between test files
   workers: 1,
-  reporter: [
-    ["html", { open: "never" }],
-    ["list"],
-  ],
+  reporter: [["html", { open: "never" }], ["list"]],
 
   // Global setup/teardown for test environment
   globalSetup: "./tests/e2e/global-setup.ts",

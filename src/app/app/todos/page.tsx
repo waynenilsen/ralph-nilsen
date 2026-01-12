@@ -83,9 +83,7 @@ function CreateTodoForm({ onSuccess }: { onSuccess: () => void }) {
           <div className="flex items-center gap-4">
             <Select
               value={priority}
-              onValueChange={(value) =>
-                setPriority(value as "low" | "medium" | "high")
-              }
+              onValueChange={(value) => setPriority(value as "low" | "medium" | "high")}
             >
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="Select priority" />
@@ -100,10 +98,7 @@ function CreateTodoForm({ onSuccess }: { onSuccess: () => void }) {
             <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={createTodo.isPending || !title.trim()}
-            >
+            <Button type="submit" disabled={createTodo.isPending || !title.trim()}>
               {createTodo.isPending ? (
                 <>
                   <Spinner className="size-4" />
@@ -166,9 +161,7 @@ export default function TodosPage() {
                   <ClipboardList className="size-6 text-muted-foreground" />
                 </EmptyMedia>
                 <EmptyTitle>No todos yet</EmptyTitle>
-                <EmptyDescription>
-                  Create your first todo to get started.
-                </EmptyDescription>
+                <EmptyDescription>Create your first todo to get started.</EmptyDescription>
               </EmptyHeader>
             </Empty>
           </CardContent>
@@ -196,17 +189,11 @@ export default function TodosPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-zinc-900 truncate">
-                            {todo.title}
-                          </h3>
-                          <Badge variant={priorityVariants[todo.priority]}>
-                            {todo.priority}
-                          </Badge>
+                          <h3 className="font-medium text-zinc-900 truncate">{todo.title}</h3>
+                          <Badge variant={priorityVariants[todo.priority]}>{todo.priority}</Badge>
                         </div>
                         {todo.description && (
-                          <p className="text-sm text-zinc-500 line-clamp-2">
-                            {todo.description}
-                          </p>
+                          <p className="text-sm text-zinc-500 line-clamp-2">{todo.description}</p>
                         )}
                       </div>
                       <Button

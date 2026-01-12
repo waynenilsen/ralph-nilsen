@@ -79,10 +79,7 @@ test.describe("Protected Routes", () => {
   });
 
   test.describe("Authenticated Access", () => {
-    test("should allow access to /app/todos when authenticated", async ({
-      page,
-      context,
-    }) => {
+    test("should allow access to /app/todos when authenticated", async ({ page, context }) => {
       await context.clearCookies();
 
       // Sign in first
@@ -103,10 +100,7 @@ test.describe("Protected Routes", () => {
       await expect(page).toHaveURL("/app/settings", { timeout: 10000 });
     });
 
-    test("should persist authentication across navigation", async ({
-      page,
-      context,
-    }) => {
+    test("should persist authentication across navigation", async ({ page, context }) => {
       await context.clearCookies();
 
       // Sign in
@@ -130,10 +124,7 @@ test.describe("Protected Routes", () => {
   });
 
   test.describe("Sign Out", () => {
-    test("should sign out and redirect to signin", async ({
-      page,
-      context,
-    }) => {
+    test("should sign out and redirect to signin", async ({ page, context }) => {
       await context.clearCookies();
 
       // Sign in first
@@ -152,10 +143,7 @@ test.describe("Protected Routes", () => {
       await expect(page).toHaveURL("/signin", { timeout: 10000 });
     });
 
-    test("should clear session cookie on sign out", async ({
-      page,
-      context,
-    }) => {
+    test("should clear session cookie on sign out", async ({ page, context }) => {
       await context.clearCookies();
 
       // Sign in first
@@ -240,10 +228,7 @@ test.describe("Protected Routes", () => {
   });
 
   test.describe("Public Routes", () => {
-    test("should allow access to landing page without auth", async ({
-      page,
-      context,
-    }) => {
+    test("should allow access to landing page without auth", async ({ page, context }) => {
       await context.clearCookies();
 
       await page.goto("/");
@@ -253,10 +238,7 @@ test.describe("Protected Routes", () => {
       await expect(page.locator("nav").getByRole("link", { name: "Get Started" })).toBeVisible();
     });
 
-    test("should allow access to signin page without auth", async ({
-      page,
-      context,
-    }) => {
+    test("should allow access to signin page without auth", async ({ page, context }) => {
       await context.clearCookies();
 
       await page.goto("/signin");
@@ -264,10 +246,7 @@ test.describe("Protected Routes", () => {
       await expect(page.locator("text=Welcome back")).toBeVisible();
     });
 
-    test("should allow access to signup page without auth", async ({
-      page,
-      context,
-    }) => {
+    test("should allow access to signup page without auth", async ({ page, context }) => {
       await context.clearCookies();
 
       await page.goto("/signup");
@@ -275,10 +254,7 @@ test.describe("Protected Routes", () => {
       await expect(page.locator("text=Create your account")).toBeVisible();
     });
 
-    test("should allow access to reset-password page without auth", async ({
-      page,
-      context,
-    }) => {
+    test("should allow access to reset-password page without auth", async ({ page, context }) => {
       await context.clearCookies();
 
       await page.goto("/reset-password");

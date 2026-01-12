@@ -52,10 +52,9 @@ describe("Row-Level Security - Tenant Isolation", () => {
         expect(tenantAView[0].id).toBe(todoAId);
 
         // Tenant A cannot see Tenant B's todo by ID
-        const { rows: crossTenantRead } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoBId]
-        );
+        const { rows: crossTenantRead } = await client.query("SELECT * FROM todos WHERE id = $1", [
+          todoBId,
+        ]);
         expect(crossTenantRead).toHaveLength(0);
         await resetTenantContext(client);
 
@@ -106,10 +105,9 @@ describe("Row-Level Security - Tenant Isolation", () => {
 
         // Tenant A attempts to delete Tenant B's todo
         await setTenantContext(client, tenantAId);
-        const { rowCount: deleteCount } = await client.query(
-          "DELETE FROM todos WHERE id = $1",
-          [todoBId]
-        );
+        const { rowCount: deleteCount } = await client.query("DELETE FROM todos WHERE id = $1", [
+          todoBId,
+        ]);
         expect(deleteCount).toBe(0); // No rows affected due to RLS
         await resetTenantContext(client);
 
@@ -156,8 +154,14 @@ describe("Row-Level Security - Tenant Isolation", () => {
         const tenantAId = await createTestTenant(client, `test-tag-read-a-${Date.now()}`);
         const tenantBId = await createTestTenant(client, `test-tag-read-b-${Date.now()}`);
 
-        const tagAId = await createTestTag(client, tenantAId, { name: "Tenant A Tag", color: "#ff0000" });
-        const tagBId = await createTestTag(client, tenantBId, { name: "Tenant B Tag", color: "#00ff00" });
+        const tagAId = await createTestTag(client, tenantAId, {
+          name: "Tenant A Tag",
+          color: "#ff0000",
+        });
+        const tagBId = await createTestTag(client, tenantBId, {
+          name: "Tenant B Tag",
+          color: "#00ff00",
+        });
 
         // Tenant A should only see their own tag
         await setTenantContext(client, tenantAId);
@@ -167,10 +171,9 @@ describe("Row-Level Security - Tenant Isolation", () => {
         expect(tenantAView[0].id).toBe(tagAId);
 
         // Tenant A cannot see Tenant B's tag by ID
-        const { rows: crossTenantRead } = await client.query(
-          "SELECT * FROM tags WHERE id = $1",
-          [tagBId]
-        );
+        const { rows: crossTenantRead } = await client.query("SELECT * FROM tags WHERE id = $1", [
+          tagBId,
+        ]);
         expect(crossTenantRead).toHaveLength(0);
         await resetTenantContext(client);
       });
@@ -214,10 +217,9 @@ describe("Row-Level Security - Tenant Isolation", () => {
 
         // Tenant A attempts to delete Tenant B's tag
         await setTenantContext(client, tenantAId);
-        const { rowCount: deleteCount } = await client.query(
-          "DELETE FROM tags WHERE id = $1",
-          [tagBId]
-        );
+        const { rowCount: deleteCount } = await client.query("DELETE FROM tags WHERE id = $1", [
+          tagBId,
+        ]);
         expect(deleteCount).toBe(0);
         await resetTenantContext(client);
 
@@ -344,10 +346,10 @@ describe("Row-Level Security - Tenant Isolation", () => {
         await setTenantContext(client, tenantAId);
 
         // This should not throw, just return 0 affected
-        const result = await client.query(
-          "UPDATE todos SET title = $1 WHERE id = $2",
-          ["Hacked!", todoBId]
-        );
+        const result = await client.query("UPDATE todos SET title = $1 WHERE id = $2", [
+          "Hacked!",
+          todoBId,
+        ]);
         expect(result.rowCount).toBe(0);
 
         await resetTenantContext(client);
@@ -408,10 +410,10 @@ describe("Row-Level Security - Context Switching", () => {
         // Insert without tenant context set, but with explicit tenant_id
         // Note: This should fail due to RLS WITH CHECK policy
         await expect(
-          client.query(
-            "INSERT INTO todos (tenant_id, title) VALUES ($1, $2)",
-            [tenantId, "Test Todo"]
-          )
+          client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [
+            tenantId,
+            "Test Todo",
+          ])
         ).rejects.toThrow(); // RLS policy prevents insert without context
       });
     });
@@ -543,10 +545,10 @@ describe("Row-Level Security - Context Switching", () => {
 
         // Clear context and try to update
         await resetTenantContext(client);
-        const { rowCount } = await client.query(
-          "UPDATE todos SET title = $1 WHERE id = $2",
-          ["Modified", todoId]
-        );
+        const { rowCount } = await client.query("UPDATE todos SET title = $1 WHERE id = $2", [
+          "Modified",
+          todoId,
+        ]);
         expect(rowCount).toBe(0);
 
         // Verify original is unchanged
@@ -581,10 +583,10 @@ describe("Row-Level Security - Edge Cases", () => {
         // Set context to Tenant A but try to insert with Tenant B's ID
         await setTenantContext(client, tenantAId);
         await expect(
-          client.query(
-            "INSERT INTO todos (tenant_id, title) VALUES ($1, $2)",
-            [tenantBId, "Injected Todo"]
-          )
+          client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [
+            tenantBId,
+            "Injected Todo",
+          ])
         ).rejects.toThrow(); // RLS WITH CHECK should prevent this
         await resetTenantContext(client);
       });
@@ -597,10 +599,10 @@ describe("Row-Level Security - Edge Cases", () => {
 
         await setTenantContext(client, tenantAId);
         await expect(
-          client.query(
-            "INSERT INTO tags (tenant_id, name) VALUES ($1, $2)",
-            [tenantBId, "Injected Tag"]
-          )
+          client.query("INSERT INTO tags (tenant_id, name) VALUES ($1, $2)", [
+            tenantBId,
+            "Injected Tag",
+          ])
         ).rejects.toThrow();
         await resetTenantContext(client);
       });
@@ -619,10 +621,7 @@ describe("Row-Level Security - Edge Cases", () => {
         // Tenant A knows the UUID but still cannot access
         await setTenantContext(client, tenantAId);
 
-        const { rows: read } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoBId]
-        );
+        const { rows: read } = await client.query("SELECT * FROM todos WHERE id = $1", [todoBId]);
         expect(read).toHaveLength(0);
 
         const { rowCount: updateCount } = await client.query(
@@ -631,10 +630,9 @@ describe("Row-Level Security - Edge Cases", () => {
         );
         expect(updateCount).toBe(0);
 
-        const { rowCount: deleteCount } = await client.query(
-          "DELETE FROM todos WHERE id = $1",
-          [todoBId]
-        );
+        const { rowCount: deleteCount } = await client.query("DELETE FROM todos WHERE id = $1", [
+          todoBId,
+        ]);
         expect(deleteCount).toBe(0);
 
         await resetTenantContext(client);
@@ -729,10 +727,10 @@ describe("Row-Level Security - Edge Cases", () => {
         const { rows: read1 } = await client.query("SELECT * FROM todos");
         expect(read1).toHaveLength(0);
 
-        await client.query(
-          "INSERT INTO todos (tenant_id, title) VALUES ($1, $2)",
-          [tenantAId, "Tenant A Todo"]
-        );
+        await client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [
+          tenantAId,
+          "Tenant A Todo",
+        ]);
 
         const { rows: read2 } = await client.query("SELECT * FROM todos");
         expect(read2).toHaveLength(1);

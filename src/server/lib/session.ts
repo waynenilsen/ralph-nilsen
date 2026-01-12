@@ -1,6 +1,13 @@
 import bcrypt from "bcryptjs";
 import { adminPool } from "@/server/db";
-import type { User, UserPublic, Session, UserTenant, Tenant, UserOrganization } from "@/shared/types";
+import type {
+  User,
+  UserPublic,
+  Session,
+  UserTenant,
+  Tenant,
+  UserOrganization,
+} from "@/shared/types";
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "12", 10);
 const SESSION_DURATION_DAYS = parseInt(process.env.SESSION_DURATION_DAYS || "30", 10);
@@ -30,10 +37,9 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
 
     while (true) {
       const candidateSlug = counter === 0 ? slug : `${slug}-${counter}`;
-      const { rows } = await client.query(
-        "SELECT id FROM tenants WHERE slug = $1",
-        [candidateSlug]
-      );
+      const { rows } = await client.query("SELECT id FROM tenants WHERE slug = $1", [
+        candidateSlug,
+      ]);
       if (rows.length === 0) {
         return candidateSlug;
       }
@@ -58,10 +64,9 @@ export function toUserPublic(user: User): UserPublic {
 export async function findUserByEmail(email: string): Promise<User | null> {
   const client = await adminPool.connect();
   try {
-    const { rows } = await client.query<User>(
-      "SELECT * FROM users WHERE email = $1",
-      [email.toLowerCase()]
-    );
+    const { rows } = await client.query<User>("SELECT * FROM users WHERE email = $1", [
+      email.toLowerCase(),
+    ]);
     return rows[0] || null;
   } finally {
     client.release();
@@ -71,10 +76,9 @@ export async function findUserByEmail(email: string): Promise<User | null> {
 export async function findUserByUsername(username: string): Promise<User | null> {
   const client = await adminPool.connect();
   try {
-    const { rows } = await client.query<User>(
-      "SELECT * FROM users WHERE username = $1",
-      [username]
-    );
+    const { rows } = await client.query<User>("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
     return rows[0] || null;
   } finally {
     client.release();
@@ -97,10 +101,7 @@ export async function findUserByEmailOrUsername(identifier: string): Promise<Use
 export async function findUserById(id: string): Promise<User | null> {
   const client = await adminPool.connect();
   try {
-    const { rows } = await client.query<User>(
-      "SELECT * FROM users WHERE id = $1",
-      [id]
-    );
+    const { rows } = await client.query<User>("SELECT * FROM users WHERE id = $1", [id]);
     return rows[0] || null;
   } finally {
     client.release();
@@ -163,10 +164,7 @@ export async function createUser(
   }
 }
 
-export async function createSession(
-  userId: string,
-  tenantId: string | null
-): Promise<Session> {
+export async function createSession(userId: string, tenantId: string | null): Promise<Session> {
   const client = await adminPool.connect();
   try {
     const expiresAt = new Date();
@@ -225,10 +223,7 @@ export async function validateSession(
 export async function deleteSession(sessionToken: string): Promise<void> {
   const client = await adminPool.connect();
   try {
-    await client.query(
-      "DELETE FROM sessions WHERE session_token = $1",
-      [sessionToken]
-    );
+    await client.query("DELETE FROM sessions WHERE session_token = $1", [sessionToken]);
   } finally {
     client.release();
   }
@@ -368,9 +363,7 @@ export async function createPasswordResetToken(userId: string): Promise<string> 
   }
 }
 
-export async function validatePasswordResetToken(
-  token: string
-): Promise<User | null> {
+export async function validatePasswordResetToken(token: string): Promise<User | null> {
   const client = await adminPool.connect();
   try {
     const { rows } = await client.query<{ user_data: User }>(
@@ -388,10 +381,7 @@ export async function validatePasswordResetToken(
   }
 }
 
-export async function resetPassword(
-  token: string,
-  newPassword: string
-): Promise<boolean> {
+export async function resetPassword(token: string, newPassword: string): Promise<boolean> {
   const client = await adminPool.connect();
   try {
     await client.query("BEGIN");
@@ -412,16 +402,12 @@ export async function resetPassword(
 
     // Hash and update password
     const passwordHash = await hashPassword(newPassword);
-    await client.query(
-      "UPDATE users SET password_hash = $1 WHERE id = $2",
-      [passwordHash, userId]
-    );
+    await client.query("UPDATE users SET password_hash = $1 WHERE id = $2", [passwordHash, userId]);
 
     // Mark token as used
-    await client.query(
-      "UPDATE password_reset_tokens SET used_at = NOW() WHERE token = $1",
-      [token]
-    );
+    await client.query("UPDATE password_reset_tokens SET used_at = NOW() WHERE token = $1", [
+      token,
+    ]);
 
     // Invalidate all sessions
     await client.query("DELETE FROM sessions WHERE user_id = $1", [userId]);

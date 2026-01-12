@@ -28,10 +28,16 @@ describe("Row-Level Security", () => {
       const tenantBId = await createTestTenant(client, "test-tenant-b");
 
       await setTenantContext(client, tenantAId);
-      await client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [tenantAId, "Tenant A Todo"]);
+      await client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [
+        tenantAId,
+        "Tenant A Todo",
+      ]);
 
       await setTenantContext(client, tenantBId);
-      await client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [tenantBId, "Tenant B Todo"]);
+      await client.query("INSERT INTO todos (tenant_id, title) VALUES ($1, $2)", [
+        tenantBId,
+        "Tenant B Todo",
+      ]);
 
       await setTenantContext(client, tenantAId);
       const { rows: tenantATodos } = await client.query("SELECT * FROM todos");
@@ -60,7 +66,10 @@ describe("Row-Level Security", () => {
       const todoId = rows[0].id;
 
       await setTenantContext(client, tenantBId);
-      const { rowCount } = await client.query("UPDATE todos SET title = $1 WHERE id = $2", ["Hacked!", todoId]);
+      const { rowCount } = await client.query("UPDATE todos SET title = $1 WHERE id = $2", [
+        "Hacked!",
+        todoId,
+      ]);
       expect(rowCount).toBe(0);
 
       await setTenantContext(client, tenantAId);

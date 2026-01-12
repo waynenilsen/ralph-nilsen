@@ -45,8 +45,13 @@ describe("Organizations Router - List", () => {
       await createTestUserTenant(client, userId, secondTenantId, "member");
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -68,7 +73,9 @@ describe("Organizations Router - List", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -94,8 +101,13 @@ describe("Organizations Router - List", () => {
       await createTestTenant(client, `test-other-org-${Date.now()}`);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -129,8 +141,13 @@ describe("Organizations Router - Create", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -153,7 +170,9 @@ describe("Organizations Router - Create", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -178,8 +197,13 @@ describe("Organizations Router - Create", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -206,8 +230,13 @@ describe("Organizations Router - Create", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -248,8 +277,13 @@ describe("Organizations Router - Switch", () => {
       await createTestUserTenant(client, userId, secondTenantId, "member");
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -274,8 +308,13 @@ describe("Organizations Router - Switch", () => {
       const otherTenantId = await createTestTenant(client, `test-other-org-${Date.now()}`);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -283,9 +322,9 @@ describe("Organizations Router - Switch", () => {
         session: sessions[0],
       });
 
-      await expect(
-        caller.organizations.switch({ tenantId: otherTenantId })
-      ).rejects.toThrow("You do not have access to this organization");
+      await expect(caller.organizations.switch({ tenantId: otherTenantId })).rejects.toThrow(
+        "You do not have access to this organization"
+      );
     });
   });
 
@@ -298,7 +337,9 @@ describe("Organizations Router - Switch", () => {
       await createTestUserTenant(client, userId, secondTenantId, "member");
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -308,9 +349,9 @@ describe("Organizations Router - Switch", () => {
         rawKey: apiKey,
       });
 
-      await expect(
-        caller.organizations.switch({ tenantId: secondTenantId })
-      ).rejects.toThrow("Organization switching requires session authentication");
+      await expect(caller.organizations.switch({ tenantId: secondTenantId })).rejects.toThrow(
+        "Organization switching requires session authentication"
+      );
     });
   });
 
@@ -323,8 +364,13 @@ describe("Organizations Router - Switch", () => {
       await createTestUserTenant(client, userId, secondTenantId, "member");
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -362,8 +408,13 @@ describe("Organizations Router - Get Current", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -383,7 +434,9 @@ describe("Organizations Router - Get Current", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -430,8 +483,13 @@ describe("Organizations Router - Error Cases", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],

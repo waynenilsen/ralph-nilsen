@@ -58,11 +58,7 @@ describe("Unified Authentication", () => {
     it("should reject expired sessions", async () => {
       await withTestClient(async (client) => {
         const tenantId = await createTestTenant(client, "test-expired-session");
-        const { userId } = await createTestUser(
-          client,
-          "test-expired@test.com",
-          "testexpireduser"
-        );
+        const { userId } = await createTestUser(client, "test-expired@test.com", "testexpireduser");
         await createTestUserTenant(client, userId, tenantId, "owner");
 
         // Create an expired session
@@ -174,11 +170,7 @@ describe("Unified Authentication", () => {
     it("both session and API key should provide consistent user context", async () => {
       await withTestClient(async (client) => {
         const tenantId = await createTestTenant(client, "test-unified-context");
-        const { userId } = await createTestUser(
-          client,
-          "test-unified@test.com",
-          "testunifieduser"
-        );
+        const { userId } = await createTestUser(client, "test-unified@test.com", "testunifieduser");
         await createTestUserTenant(client, userId, tenantId, "owner");
 
         // Create both session and API key for the same user

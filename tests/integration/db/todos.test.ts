@@ -43,10 +43,7 @@ describe("Todo Database Operations", () => {
         expect(todoId).toBeDefined();
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(1);
@@ -74,10 +71,7 @@ describe("Todo Database Operations", () => {
         });
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows[0].title).toBe("Full Todo");
@@ -94,10 +88,11 @@ describe("Todo Database Operations", () => {
 
         await setTenantContext(client, tenantId);
         await expect(
-          client.query(
-            "INSERT INTO todos (tenant_id, title, status) VALUES ($1, $2, $3)",
-            [tenantId, "Invalid Status", "invalid"]
-          )
+          client.query("INSERT INTO todos (tenant_id, title, status) VALUES ($1, $2, $3)", [
+            tenantId,
+            "Invalid Status",
+            "invalid",
+          ])
         ).rejects.toThrow();
         await resetTenantContext(client);
       });
@@ -109,10 +104,11 @@ describe("Todo Database Operations", () => {
 
         await setTenantContext(client, tenantId);
         await expect(
-          client.query(
-            "INSERT INTO todos (tenant_id, title, priority) VALUES ($1, $2, $3)",
-            [tenantId, "Invalid Priority", "critical"]
-          )
+          client.query("INSERT INTO todos (tenant_id, title, priority) VALUES ($1, $2, $3)", [
+            tenantId,
+            "Invalid Priority",
+            "critical",
+          ])
         ).rejects.toThrow();
         await resetTenantContext(client);
       });
@@ -126,10 +122,7 @@ describe("Todo Database Operations", () => {
         const todoId = await createTestTodo(client, tenantId, { title: "Readable Todo" });
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(1);
@@ -146,10 +139,7 @@ describe("Todo Database Operations", () => {
 
         // Try to read from tenant B's context
         await setTenantContext(client, tenantBId);
-        const { rows } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(0);
@@ -175,15 +165,9 @@ describe("Todo Database Operations", () => {
         const todoId = await createTestTodo(client, tenantId, { title: "Original" });
 
         await setTenantContext(client, tenantId);
-        await client.query(
-          "UPDATE todos SET title = $1 WHERE id = $2",
-          ["Updated", todoId]
-        );
+        await client.query("UPDATE todos SET title = $1 WHERE id = $2", ["Updated", todoId]);
 
-        const { rows } = await client.query(
-          "SELECT title FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT title FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows[0].title).toBe("Updated");
@@ -196,15 +180,9 @@ describe("Todo Database Operations", () => {
         const todoId = await createTestTodo(client, tenantId, { status: "pending" });
 
         await setTenantContext(client, tenantId);
-        await client.query(
-          "UPDATE todos SET status = $1 WHERE id = $2",
-          ["completed", todoId]
-        );
+        await client.query("UPDATE todos SET status = $1 WHERE id = $2", ["completed", todoId]);
 
-        const { rows } = await client.query(
-          "SELECT status FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT status FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows[0].status).toBe("completed");
@@ -217,22 +195,17 @@ describe("Todo Database Operations", () => {
         const todoId = await createTestTodo(client, tenantId);
 
         await setTenantContext(client, tenantId);
-        const { rows: before } = await client.query(
-          "SELECT updated_at FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows: before } = await client.query("SELECT updated_at FROM todos WHERE id = $1", [
+          todoId,
+        ]);
 
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        await client.query(
-          "UPDATE todos SET title = $1 WHERE id = $2",
-          ["Changed", todoId]
-        );
+        await client.query("UPDATE todos SET title = $1 WHERE id = $2", ["Changed", todoId]);
 
-        const { rows: after } = await client.query(
-          "SELECT updated_at FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows: after } = await client.query("SELECT updated_at FROM todos WHERE id = $1", [
+          todoId,
+        ]);
         await resetTenantContext(client);
 
         expect(after[0].updated_at.getTime()).toBeGreaterThan(before[0].updated_at.getTime());
@@ -248,20 +221,17 @@ describe("Todo Database Operations", () => {
 
         // Try to update from tenant B's context
         await setTenantContext(client, tenantBId);
-        const { rowCount } = await client.query(
-          "UPDATE todos SET title = $1 WHERE id = $2",
-          ["Hacked!", todoId]
-        );
+        const { rowCount } = await client.query("UPDATE todos SET title = $1 WHERE id = $2", [
+          "Hacked!",
+          todoId,
+        ]);
         await resetTenantContext(client);
 
         expect(rowCount).toBe(0);
 
         // Verify original is unchanged
         await setTenantContext(client, tenantAId);
-        const { rows } = await client.query(
-          "SELECT title FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT title FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows[0].title).toBe("Tenant A Todo");
@@ -292,20 +262,14 @@ describe("Todo Database Operations", () => {
 
         // Try to delete from tenant B's context
         await setTenantContext(client, tenantBId);
-        const { rowCount } = await client.query(
-          "DELETE FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rowCount } = await client.query("DELETE FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rowCount).toBe(0);
 
         // Verify original still exists
         await setTenantContext(client, tenantAId);
-        const { rows } = await client.query(
-          "SELECT * FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(1);
@@ -362,9 +326,7 @@ describe("Todo Database Operations", () => {
         await createTestTodos(client, tenantId, 15);
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT COUNT(*) as total FROM todos"
-        );
+        const { rows } = await client.query("SELECT COUNT(*) as total FROM todos");
         await resetTenantContext(client);
 
         expect(parseInt(rows[0].total)).toBe(15);
@@ -381,10 +343,7 @@ describe("Todo Database Operations", () => {
           await createTestTodos(client, tenantId, 2, { status: "completed" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE status = $1",
-            ["pending"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE status = $1", ["pending"]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(3);
@@ -398,10 +357,9 @@ describe("Todo Database Operations", () => {
           await createTestTodos(client, tenantId, 2, { status: "completed" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE status = $1",
-            ["completed"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE status = $1", [
+            "completed",
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);
@@ -418,10 +376,7 @@ describe("Todo Database Operations", () => {
           await createTestTodos(client, tenantId, 1, { priority: "high" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE priority = $1",
-            ["low"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE priority = $1", ["low"]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);
@@ -436,10 +391,7 @@ describe("Todo Database Operations", () => {
           await createTestTodos(client, tenantId, 4, { priority: "high" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE priority = $1",
-            ["high"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE priority = $1", ["high"]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(4);
@@ -459,10 +411,9 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "No Due Date" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE due_date < $1",
-            [new Date("2025-01-01")]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE due_date < $1", [
+            new Date("2025-01-01"),
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(1);
@@ -480,10 +431,9 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "Future", dueDate: futureDate });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE due_date > $1",
-            [new Date("2025-01-01")]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE due_date > $1", [
+            new Date("2025-01-01"),
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(1);
@@ -500,9 +450,7 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "No Due 2" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE due_date IS NULL"
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE due_date IS NULL");
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);
@@ -544,10 +492,9 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "Call mom" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE title = $1",
-            ["Buy groceries"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE title = $1", [
+            "Buy groceries",
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(1);
@@ -563,10 +510,9 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "Clean house" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE title ILIKE $1",
-            ["%buy%"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE title ILIKE $1", [
+            "%buy%",
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);
@@ -582,10 +528,9 @@ describe("Todo Database Operations", () => {
           await createTestTodo(client, tenantId, { title: "Other task" });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE title ILIKE $1",
-            ["%important%"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE title ILIKE $1", [
+            "%important%",
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);
@@ -612,10 +557,9 @@ describe("Todo Database Operations", () => {
           });
 
           await setTenantContext(client, tenantId);
-          const { rows } = await client.query(
-            "SELECT * FROM todos WHERE description ILIKE $1",
-            ["%urgent%"]
-          );
+          const { rows } = await client.query("SELECT * FROM todos WHERE description ILIKE $1", [
+            "%urgent%",
+          ]);
           await resetTenantContext(client);
 
           expect(rows).toHaveLength(2);

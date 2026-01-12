@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { ClipboardCheck, Building2, Tag, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function LandingPage() {
@@ -44,8 +38,8 @@ export default function LandingPage() {
             <span className="text-primary">Boost Your Productivity</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A powerful multi-tenant todo application that helps teams and individuals
-            manage tasks efficiently. Create organizations, collaborate, and get things done.
+            A powerful multi-tenant todo application that helps teams and individuals manage tasks
+            efficiently. Create organizations, collaborate, and get things done.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="text-lg px-8" asChild>
@@ -91,8 +85,8 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Organize tasks with custom tags and priorities. Filter and search to find
-                  exactly what you need.
+                  Organize tasks with custom tags and priorities. Filter and search to find exactly
+                  what you need.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -107,8 +101,8 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Your data is isolated and protected. Row-level security ensures complete
-                  privacy between organizations.
+                  Your data is isolated and protected. Row-level security ensures complete privacy
+                  between organizations.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -119,9 +113,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-zinc-900 mb-4">
-            Ready to Get Started?
-          </h2>
+          <h2 className="text-3xl font-bold text-zinc-900 mb-4">Ready to Get Started?</h2>
           <p className="text-xl text-muted-foreground mb-8">
             Create your free account and start organizing your tasks today.
           </p>
@@ -135,7 +127,9 @@ export default function LandingPage() {
       <footer className="py-8 px-4 sm:px-6 lg:px-8">
         <Separator className="mb-8" />
         <div className="max-w-6xl mx-auto text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Todo App. Built with Next.js, tRPC, and PostgreSQL.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Todo App. Built with Next.js, tRPC, and PostgreSQL.
+          </p>
         </div>
       </footer>
     </main>

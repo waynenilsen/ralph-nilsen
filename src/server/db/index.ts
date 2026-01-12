@@ -1,7 +1,9 @@
 import { Pool, PoolClient } from "pg";
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://app_user:app_pass@localhost:40001/todo_db";
-const DATABASE_URL_ADMIN = process.env.DATABASE_URL_ADMIN || "postgresql://todo_user:todo_pass@localhost:40001/todo_db";
+const DATABASE_URL =
+  process.env.DATABASE_URL || "postgresql://app_user:app_pass@localhost:40001/todo_db";
+const DATABASE_URL_ADMIN =
+  process.env.DATABASE_URL_ADMIN || "postgresql://todo_user:todo_pass@localhost:40001/todo_db";
 
 export const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -32,7 +34,10 @@ export async function query<T = Record<string, unknown>>(
   strings: TemplateStringsArray,
   ...values: unknown[]
 ): Promise<T[]> {
-  const text = strings.reduce((acc, str, i) => acc + str + (i < values.length ? `$${i + 1}` : ""), "");
+  const text = strings.reduce(
+    (acc, str, i) => acc + str + (i < values.length ? `$${i + 1}` : ""),
+    ""
+  );
   const result = await pool.query(text, values);
   return result.rows as T[];
 }

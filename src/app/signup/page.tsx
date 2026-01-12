@@ -9,13 +9,7 @@ import { trpc } from "@/client/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function SignupForm() {
@@ -97,7 +91,11 @@ function SignupForm() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           placeholder="you@example.com"
         />
-        {errors.email && <p className="text-sm text-destructive" data-testid="signup-email-error">{errors.email}</p>}
+        {errors.email && (
+          <p className="text-sm text-destructive" data-testid="signup-email-error">
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -110,7 +108,11 @@ function SignupForm() {
           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
           placeholder="johndoe"
         />
-        {errors.username && <p className="text-sm text-destructive" data-testid="signup-username-error">{errors.username}</p>}
+        {errors.username && (
+          <p className="text-sm text-destructive" data-testid="signup-username-error">
+            {errors.username}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -123,7 +125,11 @@ function SignupForm() {
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           placeholder="At least 8 characters"
         />
-        {errors.password && <p className="text-sm text-destructive" data-testid="signup-password-error">{errors.password}</p>}
+        {errors.password && (
+          <p className="text-sm text-destructive" data-testid="signup-password-error">
+            {errors.password}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -136,7 +142,11 @@ function SignupForm() {
           onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
           placeholder="Repeat your password"
         />
-        {errors.confirmPassword && <p className="text-sm text-destructive" data-testid="signup-confirm-password-error">{errors.confirmPassword}</p>}
+        {errors.confirmPassword && (
+          <p className="text-sm text-destructive" data-testid="signup-confirm-password-error">
+            {errors.confirmPassword}
+          </p>
+        )}
       </div>
 
       <Button

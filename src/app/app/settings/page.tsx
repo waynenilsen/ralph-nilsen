@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { trpc } from "@/client/lib/trpc";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -87,9 +81,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <Label className="mb-1">Slug</Label>
-                <p className="text-muted-foreground font-mono text-sm">
-                  {meData.tenant.slug}
-                </p>
+                <p className="text-muted-foreground font-mono text-sm">{meData.tenant.slug}</p>
               </div>
             </div>
           ) : (
@@ -101,9 +93,7 @@ export default function SettingsPage() {
 
         <CardHeader>
           <CardTitle>Security</CardTitle>
-          <CardDescription>
-            Manage your password and security settings.
-          </CardDescription>
+          <CardDescription>Manage your password and security settings.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="link" asChild className="p-0 h-auto">

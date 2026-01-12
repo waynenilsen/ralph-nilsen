@@ -9,7 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
 
 function CreateOrgForm({ onSuccess }: { onSuccess: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,17 +69,10 @@ function CreateOrgForm({ onSuccess }: { onSuccess: () => void }) {
             autoFocus
           />
           <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsOpen(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={createOrg.isPending || !name.trim()}
-            >
+            <Button type="submit" disabled={createOrg.isPending || !name.trim()}>
               {createOrg.isPending ? (
                 <>
                   <Spinner className="size-4" />
@@ -120,7 +119,9 @@ export default function OrganizationsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Organizations</h1>
-          <p className="text-muted-foreground mt-1">Manage your organizations and switch between them.</p>
+          <p className="text-muted-foreground mt-1">
+            Manage your organizations and switch between them.
+          </p>
         </div>
         <CreateOrgForm onSuccess={() => utils.organizations.list.invalidate()} />
       </div>
@@ -130,19 +131,14 @@ export default function OrganizationsPage() {
           {orgs.map((org) => {
             const isCurrent = currentOrg?.tenant?.id === org.tenant_id;
             return (
-              <Card
-                key={org.tenant_id}
-                className={isCurrent ? "ring-2 ring-primary" : ""}
-              >
+              <Card key={org.tenant_id} className={isCurrent ? "ring-2 ring-primary" : ""}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle>{org.tenant.name}</CardTitle>
                       <CardDescription>{org.tenant.slug}</CardDescription>
                     </div>
-                    <Badge variant={roleVariants[org.role]}>
-                      {org.role}
-                    </Badge>
+                    <Badge variant={roleVariants[org.role]}>{org.role}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>

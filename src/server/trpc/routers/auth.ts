@@ -24,100 +24,91 @@ import {
 import { sendWelcomeEmail, sendPasswordResetEmail } from "@/server/lib/email";
 
 export const authRouter = router({
-  signup: publicProcedure
-    .input(SignupSchema)
-    .mutation(async ({ input }) => {
-      // Check if email already exists
-      const existingEmail = await findUserByEmail(input.email);
-      if (existingEmail) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Email already in use",
-        });
-      }
-
-      // Check if username already exists
-      const existingUsername = await findUserByUsername(input.username);
-      if (existingUsername) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Username already taken",
-        });
-      }
-
-      // Create user, organization, and session
-      const { user, tenant, session } = await createUser(
-        input.email,
-        input.username,
-        input.password
-      );
-
-      // Send welcome email asynchronously
-      sendWelcomeEmail(user.email, user.username).catch((err) => {
-        console.error("Failed to send welcome email:", err);
+  signup: publicProcedure.input(SignupSchema).mutation(async ({ input }) => {
+    // Check if email already exists
+    const existingEmail = await findUserByEmail(input.email);
+    if (existingEmail) {
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Email already in use",
       });
+    }
 
-      return {
-        user: toUserPublic(user),
-        tenant,
-        sessionToken: session.session_token,
-      };
-    }),
+    // Check if username already exists
+    const existingUsername = await findUserByUsername(input.username);
+    if (existingUsername) {
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Username already taken",
+      });
+    }
 
-  signin: publicProcedure
-    .input(SigninSchema)
-    .mutation(async ({ input }) => {
-      // Find user by email or username
-      const user = await findUserByEmailOrUsername(input.identifier);
-      if (!user) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid credentials",
-        });
-      }
+    // Create user, organization, and session
+    const { user, tenant, session } = await createUser(input.email, input.username, input.password);
 
-      // Verify password
-      const passwordValid = await comparePassword(input.password, user.password_hash);
-      if (!passwordValid) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid credentials",
-        });
-      }
+    // Send welcome email asynchronously
+    sendWelcomeEmail(user.email, user.username).catch((err) => {
+      console.error("Failed to send welcome email:", err);
+    });
 
-      // Get user's default organization
-      const tenant = await getUserDefaultOrganization(user.id);
+    return {
+      user: toUserPublic(user),
+      tenant,
+      sessionToken: session.session_token,
+    };
+  }),
 
-      // Create session
-      const session = await createSession(user.id, tenant?.id || null);
+  signin: publicProcedure.input(SigninSchema).mutation(async ({ input }) => {
+    // Find user by email or username
+    const user = await findUserByEmailOrUsername(input.identifier);
+    if (!user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Invalid credentials",
+      });
+    }
 
-      return {
-        user: toUserPublic(user),
-        tenant,
-        sessionToken: session.session_token,
-      };
-    }),
+    // Verify password
+    const passwordValid = await comparePassword(input.password, user.password_hash);
+    if (!passwordValid) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Invalid credentials",
+      });
+    }
 
-  signout: userProcedure
-    .mutation(async ({ ctx }) => {
-      // Signout only works for session-based auth
-      if (!ctx.session) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Signout requires session authentication. API keys don't have sessions to invalidate.",
-        });
-      }
-      await deleteSession(ctx.session.session_token);
-      return { success: true };
-    }),
+    // Get user's default organization
+    const tenant = await getUserDefaultOrganization(user.id);
 
-  me: userProcedure
-    .query(async ({ ctx }) => {
-      return {
-        user: toUserPublic(ctx.user!),
-        tenant: ctx.tenant,
-      };
-    }),
+    // Create session
+    const session = await createSession(user.id, tenant?.id || null);
+
+    return {
+      user: toUserPublic(user),
+      tenant,
+      sessionToken: session.session_token,
+    };
+  }),
+
+  signout: userProcedure.mutation(async ({ ctx }) => {
+    // Signout only works for session-based auth
+    if (!ctx.session) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message:
+          "Signout requires session authentication. API keys don't have sessions to invalidate.",
+      });
+    }
+    await deleteSession(ctx.session.session_token);
+    return { success: true };
+  }),
+
+  me: userProcedure.query(async ({ ctx }) => {
+    return {
+      user: toUserPublic(ctx.user!),
+      tenant: ctx.tenant,
+    };
+  }),
 
   requestPasswordReset: publicProcedure
     .input(RequestPasswordResetSchema)
@@ -147,18 +138,16 @@ export const authRouter = router({
       return { valid: !!user };
     }),
 
-  resetPassword: publicProcedure
-    .input(ResetPasswordSchema)
-    .mutation(async ({ input }) => {
-      const success = await resetPassword(input.token, input.password);
+  resetPassword: publicProcedure.input(ResetPasswordSchema).mutation(async ({ input }) => {
+    const success = await resetPassword(input.token, input.password);
 
-      if (!success) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Invalid or expired reset token",
-        });
-      }
+    if (!success) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Invalid or expired reset token",
+      });
+    }
 
-      return { success: true };
-    }),
+    return { success: true };
+  }),
 });

@@ -15,10 +15,13 @@ function getTransporter(): Transporter {
       host: SMTP_HOST,
       port: SMTP_PORT,
       secure: false,
-      auth: SMTP_USER && SMTP_PASS ? {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      } : undefined,
+      auth:
+        SMTP_USER && SMTP_PASS
+          ? {
+              user: SMTP_USER,
+              pass: SMTP_PASS,
+            }
+          : undefined,
     });
   }
   return transporter;

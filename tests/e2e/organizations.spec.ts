@@ -59,7 +59,9 @@ test.describe("Organizations", () => {
     await page.goto("/app/organizations");
 
     // The default organization should be visible
-    await expect(page.locator(`text=${testUser.username}'s Organization`)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(`text=${testUser.username}'s Organization`)).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should create new organization", async ({ page }) => {

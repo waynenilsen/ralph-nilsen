@@ -12,37 +12,35 @@ export const tagsRouter = router({
     });
   }),
 
-  get: userProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ ctx, input }) => {
-      return withTenantContext(ctx.tenant!.id, async (client) => {
-        const { rows } = await client.query<Tag>("SELECT * FROM tags WHERE id = $1", [input.id]);
-        if (rows.length === 0) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
-        }
-        return rows[0]!;
-      });
-    }),
+  get: userProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ ctx, input }) => {
+    return withTenantContext(ctx.tenant!.id, async (client) => {
+      const { rows } = await client.query<Tag>("SELECT * FROM tags WHERE id = $1", [input.id]);
+      if (rows.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
+      }
+      return rows[0]!;
+    });
+  }),
 
-  create: userProcedure
-    .input(CreateTagSchema)
-    .mutation(async ({ ctx, input }) => {
-      const tenantId = ctx.tenant!.id;
+  create: userProcedure.input(CreateTagSchema).mutation(async ({ ctx, input }) => {
+    const tenantId = ctx.tenant!.id;
 
-      return withTenantContext(tenantId, async (client) => {
-        const { rows: existing } = await client.query("SELECT id FROM tags WHERE name = $1", [input.name]);
-        if (existing.length > 0) {
-          throw new TRPCError({ code: "CONFLICT", message: "A tag with this name already exists" });
-        }
+    return withTenantContext(tenantId, async (client) => {
+      const { rows: existing } = await client.query("SELECT id FROM tags WHERE name = $1", [
+        input.name,
+      ]);
+      if (existing.length > 0) {
+        throw new TRPCError({ code: "CONFLICT", message: "A tag with this name already exists" });
+      }
 
-        const { rows } = await client.query<Tag>(
-          "INSERT INTO tags (tenant_id, name, color) VALUES ($1, $2, $3) RETURNING *",
-          [tenantId, input.name, input.color || null]
-        );
+      const { rows } = await client.query<Tag>(
+        "INSERT INTO tags (tenant_id, name, color) VALUES ($1, $2, $3) RETURNING *",
+        [tenantId, input.name, input.color || null]
+      );
 
-        return rows[0]!;
-      });
-    }),
+      return rows[0]!;
+    });
+  }),
 
   update: userProcedure
     .input(z.object({ id: z.string().uuid(), data: UpdateTagSchema }))
@@ -54,7 +52,10 @@ export const tagsRouter = router({
             [input.data.name, input.id]
           );
           if (existing.length > 0) {
-            throw new TRPCError({ code: "CONFLICT", message: "A tag with this name already exists" });
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "A tag with this name already exists",
+            });
           }
         }
 
@@ -62,8 +63,14 @@ export const tagsRouter = router({
         const values: unknown[] = [];
         let idx = 1;
 
-        if (input.data.name !== undefined) { updates.push(`name = $${idx++}`); values.push(input.data.name); }
-        if (input.data.color !== undefined) { updates.push(`color = $${idx++}`); values.push(input.data.color); }
+        if (input.data.name !== undefined) {
+          updates.push(`name = $${idx++}`);
+          values.push(input.data.name);
+        }
+        if (input.data.color !== undefined) {
+          updates.push(`color = $${idx++}`);
+          values.push(input.data.color);
+        }
 
         if (updates.length === 0) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "No fields to update" });
@@ -99,7 +106,9 @@ export const tagsRouter = router({
     .input(z.object({ tagId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return withTenantContext(ctx.tenant!.id, async (client) => {
-        const { rows: tagRows } = await client.query("SELECT id FROM tags WHERE id = $1", [input.tagId]);
+        const { rows: tagRows } = await client.query("SELECT id FROM tags WHERE id = $1", [
+          input.tagId,
+        ]);
         if (tagRows.length === 0) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
         }

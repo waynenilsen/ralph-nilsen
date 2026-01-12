@@ -1,7 +1,8 @@
 import { Pool, PoolClient } from "pg";
 import bcrypt from "bcryptjs";
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://app_user:app_pass@localhost:40001/todo_db";
+const DATABASE_URL =
+  process.env.DATABASE_URL || "postgresql://app_user:app_pass@localhost:40001/todo_db";
 
 let pool: Pool | null = null;
 
@@ -42,7 +43,10 @@ export async function cleanupTestData(client: PoolClient): Promise<void> {
   await client.query("DELETE FROM tenants WHERE slug LIKE 'test-%'");
 }
 
-export async function createTestTenant(client: PoolClient, slug: string = `test-${Date.now()}`): Promise<string> {
+export async function createTestTenant(
+  client: PoolClient,
+  slug: string = `test-${Date.now()}`
+): Promise<string> {
   const { rows } = await client.query(
     "INSERT INTO tenants (name, slug) VALUES ($1, $2) RETURNING id",
     [`Test Tenant ${slug}`, slug]
@@ -69,10 +73,11 @@ export async function createTestUserTenant(
   tenantId: string,
   role: string = "member"
 ): Promise<void> {
-  await client.query(
-    "INSERT INTO user_tenants (user_id, tenant_id, role) VALUES ($1, $2, $3)",
-    [userId, tenantId, role]
-  );
+  await client.query("INSERT INTO user_tenants (user_id, tenant_id, role) VALUES ($1, $2, $3)", [
+    userId,
+    tenantId,
+    role,
+  ]);
 }
 
 export async function createTestSession(

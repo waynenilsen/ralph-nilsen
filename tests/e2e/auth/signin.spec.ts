@@ -67,9 +67,7 @@ test.describe("Sign In Flow", () => {
       await page.goto("/signin");
       await page.click("button[type='submit']");
 
-      await expect(
-        page.locator("text=Please fill in all fields")
-      ).toBeVisible();
+      await expect(page.locator("text=Please fill in all fields")).toBeVisible();
     });
 
     test("should show error for invalid credentials", async ({ page }) => {
@@ -109,9 +107,7 @@ test.describe("Sign In Flow", () => {
       await expect(page).toHaveURL("/app/todos", { timeout: 15000 });
     });
 
-    test("should signin with username and redirect to app", async ({
-      page,
-    }) => {
+    test("should signin with username and redirect to app", async ({ page }) => {
       await page.goto("/signin");
 
       await page.fill("#identifier", testUser.username);
@@ -137,17 +133,12 @@ test.describe("Sign In Flow", () => {
 
       // Verify session cookie is set
       const cookies = await context.cookies();
-      const sessionCookie = cookies.find(
-        (cookie) => cookie.name === "session_token"
-      );
+      const sessionCookie = cookies.find((cookie) => cookie.name === "session_token");
       expect(sessionCookie).toBeDefined();
       expect(sessionCookie?.value).toBeTruthy();
     });
 
-    test("should persist session across page reload", async ({
-      page,
-      context,
-    }) => {
+    test("should persist session across page reload", async ({ page, context }) => {
       // Clear any existing cookies
       await context.clearCookies();
 

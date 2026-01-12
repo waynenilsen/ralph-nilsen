@@ -46,8 +46,13 @@ describe("Todos Router - CRUD with Session Auth", () => {
       await createTestTodos(client, tenantId, 3, { titlePrefix: "Test Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -68,8 +73,13 @@ describe("Todos Router - CRUD with Session Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "My Test Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -89,8 +99,13 @@ describe("Todos Router - CRUD with Session Auth", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -120,8 +135,13 @@ describe("Todos Router - CRUD with Session Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "Original Title" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -148,8 +168,13 @@ describe("Todos Router - CRUD with Session Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "To Delete" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -187,7 +212,9 @@ describe("Todos Router - CRUD with API Key Auth", () => {
       await createTestTodos(client, tenantId, 3, { titlePrefix: "API Test Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -210,7 +237,9 @@ describe("Todos Router - CRUD with API Key Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "API Test Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -232,7 +261,9 @@ describe("Todos Router - CRUD with API Key Auth", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -260,7 +291,9 @@ describe("Todos Router - CRUD with API Key Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "Original" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -285,7 +318,9 @@ describe("Todos Router - CRUD with API Key Auth", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "To Delete" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -322,8 +357,13 @@ describe("Todos Router - Filtering", () => {
       await createTestTodos(client, tenantId, 2, { status: "completed" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -350,8 +390,13 @@ describe("Todos Router - Filtering", () => {
       await createTestTodos(client, tenantId, 1, { priority: "low" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -383,8 +428,13 @@ describe("Todos Router - Filtering", () => {
       await createTestTodo(client, tenantId, { title: "Due Next Week", dueDate: nextWeek });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -425,8 +475,13 @@ describe("Todos Router - Search", () => {
       await createTestTodo(client, tenantId, { title: "Clean house" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -459,8 +514,13 @@ describe("Todos Router - Search", () => {
       });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -483,8 +543,13 @@ describe("Todos Router - Search", () => {
       await createTestTodo(client, tenantId, { title: "MixedCase Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -520,8 +585,13 @@ describe("Todos Router - Pagination", () => {
       await createTestTodos(client, tenantId, 15, { titlePrefix: "Paginated Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -564,8 +634,13 @@ describe("Todos Router - Pagination", () => {
       await createTestTodos(client, tenantId, 5);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -601,8 +676,13 @@ describe("Todos Router - Tag Operations", () => {
       const tagId = await createTestTag(client, tenantId, { name: "Important" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -628,8 +708,13 @@ describe("Todos Router - Tag Operations", () => {
       await addTagToTodo(client, tenantId, todoId, tagId);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -653,8 +738,13 @@ describe("Todos Router - Tag Operations", () => {
       const tag2Id = await createTestTag(client, tenantId, { name: "Tag2" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -687,8 +777,13 @@ describe("Todos Router - Tag Operations", () => {
       await addTagToTodo(client, tenantId, todoId, tag1Id);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -716,8 +811,13 @@ describe("Todos Router - Tag Operations", () => {
       const todoId = await createTestTodo(client, tenantId, { title: "Todo" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -742,8 +842,13 @@ describe("Todos Router - Tag Operations", () => {
       await addTagToTodo(client, tenantId, todoId, tagId);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -777,7 +882,9 @@ describe("Todos Router - Error Cases", () => {
     const caller = createPublicCaller();
 
     await expect(caller.todos.list({})).rejects.toThrow();
-    await expect(caller.todos.get({ id: "00000000-0000-0000-0000-000000000000" })).rejects.toThrow();
+    await expect(
+      caller.todos.get({ id: "00000000-0000-0000-0000-000000000000" })
+    ).rejects.toThrow();
     await expect(
       caller.todos.create({ title: "Test", status: "pending", priority: "medium" })
     ).rejects.toThrow();
@@ -788,8 +895,13 @@ describe("Todos Router - Error Cases", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -808,8 +920,13 @@ describe("Todos Router - Error Cases", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],

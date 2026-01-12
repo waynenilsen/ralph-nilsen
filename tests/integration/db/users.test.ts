@@ -43,10 +43,7 @@ describe("User Database Operations", () => {
         expect(result.email).toBe(email);
         expect(result.username).toBe(username);
 
-        const { rows } = await client.query(
-          "SELECT * FROM users WHERE id = $1",
-          [result.userId]
-        );
+        const { rows } = await client.query("SELECT * FROM users WHERE id = $1", [result.userId]);
 
         expect(rows).toHaveLength(1);
         expect(rows[0].email).toBe(email);
@@ -72,9 +69,7 @@ describe("User Database Operations", () => {
         const email = generateTestEmail();
         await createTestUser(client, email, generateTestUsername());
 
-        await expect(
-          createTestUser(client, email, generateTestUsername())
-        ).rejects.toThrow();
+        await expect(createTestUser(client, email, generateTestUsername())).rejects.toThrow();
       });
     });
 
@@ -83,9 +78,7 @@ describe("User Database Operations", () => {
         const username = generateTestUsername();
         await createTestUser(client, generateTestEmail(), username);
 
-        await expect(
-          createTestUser(client, generateTestEmail(), username)
-        ).rejects.toThrow();
+        await expect(createTestUser(client, generateTestEmail(), username)).rejects.toThrow();
       });
     });
 
@@ -93,18 +86,20 @@ describe("User Database Operations", () => {
       await withTestClient(async (client) => {
         // Username too short (less than 3 characters)
         await expect(
-          client.query(
-            "INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3)",
-            ["test-short@test.com", "ab", "hash"]
-          )
+          client.query("INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3)", [
+            "test-short@test.com",
+            "ab",
+            "hash",
+          ])
         ).rejects.toThrow();
 
         // Username with invalid characters
         await expect(
-          client.query(
-            "INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3)",
-            ["test-invalid@test.com", "user@name!", "hash"]
-          )
+          client.query("INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3)", [
+            "test-invalid@test.com",
+            "user@name!",
+            "hash",
+          ])
         ).rejects.toThrow();
       });
     });
@@ -112,11 +107,7 @@ describe("User Database Operations", () => {
     it("should accept valid username formats", async () => {
       await withTestClient(async (client) => {
         // Alphanumeric
-        const result1 = await createTestUser(
-          client,
-          generateTestEmail(),
-          `test${Date.now()}abc`
-        );
+        const result1 = await createTestUser(client, generateTestEmail(), `test${Date.now()}abc`);
         expect(result1.userId).toBeDefined();
 
         // With underscores
@@ -141,10 +132,9 @@ describe("User Database Operations", () => {
       await withTestClient(async (client) => {
         const result = await createTestUser(client);
 
-        const { rows } = await client.query(
-          "SELECT password_hash FROM users WHERE id = $1",
-          [result.userId]
-        );
+        const { rows } = await client.query("SELECT password_hash FROM users WHERE id = $1", [
+          result.userId,
+        ]);
 
         // Password hash should not be the plaintext password
         expect(rows[0].password_hash).not.toBe("testpassword123");
@@ -176,26 +166,23 @@ describe("User Database Operations", () => {
         const email = `Test-Email-${Date.now()}@Test.com`;
         await createTestUser(client, email);
 
-        const { rows: exact } = await client.query(
-          "SELECT id FROM users WHERE email = $1",
-          [email]
-        );
+        const { rows: exact } = await client.query("SELECT id FROM users WHERE email = $1", [
+          email,
+        ]);
         expect(exact).toHaveLength(1);
 
-        const { rows: lowercase } = await client.query(
-          "SELECT id FROM users WHERE email = $1",
-          [email.toLowerCase()]
-        );
+        const { rows: lowercase } = await client.query("SELECT id FROM users WHERE email = $1", [
+          email.toLowerCase(),
+        ]);
         expect(lowercase).toHaveLength(0);
       });
     });
 
     it("should return empty for non-existent email", async () => {
       await withTestClient(async (client) => {
-        const { rows } = await client.query(
-          "SELECT * FROM users WHERE email = $1",
-          ["nonexistent@test.com"]
-        );
+        const { rows } = await client.query("SELECT * FROM users WHERE email = $1", [
+          "nonexistent@test.com",
+        ]);
 
         expect(rows).toHaveLength(0);
       });
@@ -208,10 +195,9 @@ describe("User Database Operations", () => {
         const username = generateTestUsername();
         const { userId } = await createTestUser(client, generateTestEmail(), username);
 
-        const { rows } = await client.query(
-          "SELECT id, username FROM users WHERE username = $1",
-          [username]
-        );
+        const { rows } = await client.query("SELECT id, username FROM users WHERE username = $1", [
+          username,
+        ]);
 
         expect(rows).toHaveLength(1);
         expect(rows[0].id).toBe(userId);
@@ -221,10 +207,9 @@ describe("User Database Operations", () => {
 
     it("should return empty for non-existent username", async () => {
       await withTestClient(async (client) => {
-        const { rows } = await client.query(
-          "SELECT * FROM users WHERE username = $1",
-          ["nonexistentuser"]
-        );
+        const { rows } = await client.query("SELECT * FROM users WHERE username = $1", [
+          "nonexistentuser",
+        ]);
 
         expect(rows).toHaveLength(0);
       });
@@ -271,15 +256,9 @@ describe("User Database Operations", () => {
         const { userId } = await createTestUser(client);
         const newEmail = generateTestEmail("updated");
 
-        await client.query(
-          "UPDATE users SET email = $1 WHERE id = $2",
-          [newEmail, userId]
-        );
+        await client.query("UPDATE users SET email = $1 WHERE id = $2", [newEmail, userId]);
 
-        const { rows } = await client.query(
-          "SELECT email FROM users WHERE id = $1",
-          [userId]
-        );
+        const { rows } = await client.query("SELECT email FROM users WHERE id = $1", [userId]);
 
         expect(rows[0].email).toBe(newEmail);
       });
@@ -289,15 +268,11 @@ describe("User Database Operations", () => {
       await withTestClient(async (client) => {
         const { userId } = await createTestUser(client);
 
-        await client.query(
-          "UPDATE users SET email_verified = $1 WHERE id = $2",
-          [true, userId]
-        );
+        await client.query("UPDATE users SET email_verified = $1 WHERE id = $2", [true, userId]);
 
-        const { rows } = await client.query(
-          "SELECT email_verified FROM users WHERE id = $1",
-          [userId]
-        );
+        const { rows } = await client.query("SELECT email_verified FROM users WHERE id = $1", [
+          userId,
+        ]);
 
         expect(rows[0].email_verified).toBe(true);
       });
@@ -307,23 +282,18 @@ describe("User Database Operations", () => {
       await withTestClient(async (client) => {
         const { userId } = await createTestUser(client);
 
-        const { rows: before } = await client.query(
-          "SELECT updated_at FROM users WHERE id = $1",
-          [userId]
-        );
+        const { rows: before } = await client.query("SELECT updated_at FROM users WHERE id = $1", [
+          userId,
+        ]);
 
         // Small delay to ensure timestamp difference
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        await client.query(
-          "UPDATE users SET email_verified = $1 WHERE id = $2",
-          [true, userId]
-        );
+        await client.query("UPDATE users SET email_verified = $1 WHERE id = $2", [true, userId]);
 
-        const { rows: after } = await client.query(
-          "SELECT updated_at FROM users WHERE id = $1",
-          [userId]
-        );
+        const { rows: after } = await client.query("SELECT updated_at FROM users WHERE id = $1", [
+          userId,
+        ]);
 
         expect(after[0].updated_at.getTime()).toBeGreaterThan(before[0].updated_at.getTime());
       });
@@ -374,9 +344,7 @@ describe("User Database Operations", () => {
 
         await createTestUserTenant(client, userId, tenantId);
 
-        await expect(
-          createTestUserTenant(client, userId, tenantId)
-        ).rejects.toThrow();
+        await expect(createTestUserTenant(client, userId, tenantId)).rejects.toThrow();
       });
     });
 

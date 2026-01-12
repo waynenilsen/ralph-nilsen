@@ -269,8 +269,13 @@ describe("Auth Router - Signout", () => {
 
       // Get user and tenant for caller
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -295,7 +300,9 @@ describe("Auth Router - Signout", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -327,11 +334,17 @@ describe("Auth Router - Me", () => {
 
   it("should return current user info with session auth", async () => {
     await withTestClient(async (client) => {
-      const { sessionToken, userId, tenantId, email, username } = await createTestUserWithSession(client);
+      const { sessionToken, userId, tenantId, email, username } =
+        await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -354,7 +367,9 @@ describe("Auth Router - Me", () => {
       const { apiKey, userId, tenantId, email, username } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -379,8 +394,13 @@ describe("Auth Router - Me", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -544,7 +564,7 @@ describe("Auth Router - Password Reset", () => {
       await caller.auth.resetPassword({
         token,
         password: "NewStrongPassword123!",
-          confirmPassword: "NewStrongPassword123!",
+        confirmPassword: "NewStrongPassword123!",
       });
 
       // Second reset with same token should fail

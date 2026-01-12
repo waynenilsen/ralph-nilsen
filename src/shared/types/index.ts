@@ -12,7 +12,11 @@ export interface Tenant {
 
 export const CreateTenantSchema = z.object({
   name: z.string().min(1).max(255),
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9-]+$/),
 });
 
 export const UpdateTenantSchema = z.object({
@@ -72,12 +76,20 @@ export interface Tag {
 
 export const CreateTagSchema = z.object({
   name: z.string().min(1).max(100),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional()
+    .nullable(),
 });
 
 export const UpdateTagSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional()
+    .nullable(),
 });
 
 export type CreateTagInput = z.infer<typeof CreateTagSchema>;
@@ -170,19 +182,24 @@ export interface PasswordResetToken {
 }
 
 // Auth schemas
-export const SignupSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  username: z.string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be at most 30 characters")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and hyphens"),
-  password: z.string()
-    .min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const SignupSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username must be at most 30 characters")
+      .regex(
+        /^[a-zA-Z0-9_-]+$/,
+        "Username can only contain letters, numbers, underscores, and hyphens"
+      ),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export type SignupInput = z.infer<typeof SignupSchema>;
 
@@ -199,14 +216,16 @@ export const RequestPasswordResetSchema = z.object({
 
 export type RequestPasswordResetInput = z.infer<typeof RequestPasswordResetSchema>;
 
-export const ResetPasswordSchema = z.object({
-  token: z.string().uuid("Invalid token"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().uuid("Invalid token"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 

@@ -53,15 +53,9 @@ export async function createTestUserWithSession(
     options.email || `test-${timestamp}@test.com`,
     options.username || `testuser${timestamp}`
   );
-  const userId = (await client.query(
-    "SELECT id FROM users WHERE email = $1",
-    [email]
-  )).rows[0].id;
+  const userId = (await client.query("SELECT id FROM users WHERE email = $1", [email])).rows[0].id;
 
-  const tenantId = await createTestTenant(
-    client,
-    options.tenantSlug || `test-${timestamp}`
-  );
+  const tenantId = await createTestTenant(client, options.tenantSlug || `test-${timestamp}`);
 
   await createTestUserTenant(client, userId, tenantId, options.role || "owner");
 
@@ -96,15 +90,9 @@ export async function createTestUserWithApiKey(
     options.email || `test-${timestamp}@test.com`,
     options.username || `testuser${timestamp}`
   );
-  const userId = (await client.query(
-    "SELECT id FROM users WHERE email = $1",
-    [email]
-  )).rows[0].id;
+  const userId = (await client.query("SELECT id FROM users WHERE email = $1", [email])).rows[0].id;
 
-  const tenantId = await createTestTenant(
-    client,
-    options.tenantSlug || `test-${timestamp}`
-  );
+  const tenantId = await createTestTenant(client, options.tenantSlug || `test-${timestamp}`);
 
   await createTestUserTenant(client, userId, tenantId, options.role || "owner");
 
@@ -196,11 +184,7 @@ export async function createTestTag(
       `INSERT INTO tags (tenant_id, name, color)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [
-        tenantId,
-        options.name || `Test Tag ${Date.now()}`,
-        options.color || "#000000",
-      ]
+      [tenantId, options.name || `Test Tag ${Date.now()}`, options.color || "#000000"]
     );
     return rows[0].id;
   } finally {

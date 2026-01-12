@@ -44,10 +44,7 @@ describe("Tag Database Operations", () => {
         expect(tagId).toBeDefined();
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT * FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(1);
@@ -68,10 +65,7 @@ describe("Tag Database Operations", () => {
         });
 
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT color FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT color FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows[0].color).toBe("#ff0000");
@@ -84,9 +78,7 @@ describe("Tag Database Operations", () => {
 
         await createTestTag(client, tenantId, { name: "UniqueTag" });
 
-        await expect(
-          createTestTag(client, tenantId, { name: "UniqueTag" })
-        ).rejects.toThrow();
+        await expect(createTestTag(client, tenantId, { name: "UniqueTag" })).rejects.toThrow();
       });
     });
 
@@ -112,15 +104,9 @@ describe("Tag Database Operations", () => {
         const tagId = await createTestTag(client, tenantId, { name: "Original" });
 
         await setTenantContext(client, tenantId);
-        await client.query(
-          "UPDATE tags SET name = $1 WHERE id = $2",
-          ["Updated", tagId]
-        );
+        await client.query("UPDATE tags SET name = $1 WHERE id = $2", ["Updated", tagId]);
 
-        const { rows } = await client.query(
-          "SELECT name FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT name FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows[0].name).toBe("Updated");
@@ -136,15 +122,9 @@ describe("Tag Database Operations", () => {
         });
 
         await setTenantContext(client, tenantId);
-        await client.query(
-          "UPDATE tags SET color = $1 WHERE id = $2",
-          ["#00ff00", tagId]
-        );
+        await client.query("UPDATE tags SET color = $1 WHERE id = $2", ["#00ff00", tagId]);
 
-        const { rows } = await client.query(
-          "SELECT color FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT color FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows[0].color).toBe("#00ff00");
@@ -159,20 +139,17 @@ describe("Tag Database Operations", () => {
         const tagId = await createTestTag(client, tenantAId, { name: "Tenant A Tag" });
 
         await setTenantContext(client, tenantBId);
-        const { rowCount } = await client.query(
-          "UPDATE tags SET name = $1 WHERE id = $2",
-          ["Hacked!", tagId]
-        );
+        const { rowCount } = await client.query("UPDATE tags SET name = $1 WHERE id = $2", [
+          "Hacked!",
+          tagId,
+        ]);
         await resetTenantContext(client);
 
         expect(rowCount).toBe(0);
 
         // Verify original is unchanged
         await setTenantContext(client, tenantAId);
-        const { rows } = await client.query(
-          "SELECT name FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT name FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows[0].name).toBe("Tenant A Tag");
@@ -204,27 +181,24 @@ describe("Tag Database Operations", () => {
 
         // Verify todo_tags entry exists (need tenant context due to RLS)
         await setTenantContext(client, tenantId);
-        const { rows: before } = await client.query(
-          "SELECT * FROM todo_tags WHERE tag_id = $1",
-          [tagId]
-        );
+        const { rows: before } = await client.query("SELECT * FROM todo_tags WHERE tag_id = $1", [
+          tagId,
+        ]);
         expect(before).toHaveLength(1);
 
         // Delete tag
         await client.query("DELETE FROM tags WHERE id = $1", [tagId]);
 
         // Verify todo_tags entry is also deleted
-        const { rows: after } = await client.query(
-          "SELECT * FROM todo_tags WHERE tag_id = $1",
-          [tagId]
-        );
+        const { rows: after } = await client.query("SELECT * FROM todo_tags WHERE tag_id = $1", [
+          tagId,
+        ]);
         expect(after).toHaveLength(0);
 
         // But todo should still exist (check with tenant context)
-        const { rows: todoCheck } = await client.query(
-          "SELECT id FROM todos WHERE id = $1",
-          [todoId]
-        );
+        const { rows: todoCheck } = await client.query("SELECT id FROM todos WHERE id = $1", [
+          todoId,
+        ]);
         await resetTenantContext(client);
         expect(todoCheck).toHaveLength(1);
       });
@@ -238,10 +212,7 @@ describe("Tag Database Operations", () => {
         const tagId = await createTestTag(client, tenantAId, { name: "Tenant A Tag" });
 
         await setTenantContext(client, tenantBId);
-        const { rowCount } = await client.query(
-          "DELETE FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rowCount } = await client.query("DELETE FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rowCount).toBe(0);
@@ -314,10 +285,7 @@ describe("Tag Database Operations", () => {
 
         // Need tenant context to query todo_tags due to RLS
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM todo_tags WHERE todo_id = $1",
-          [todoId]
-        );
+        const { rows } = await client.query("SELECT * FROM todo_tags WHERE todo_id = $1", [todoId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(3);
@@ -337,10 +305,7 @@ describe("Tag Database Operations", () => {
 
         // Need tenant context to query todo_tags due to RLS
         await setTenantContext(client, tenantId);
-        const { rows } = await client.query(
-          "SELECT * FROM todo_tags WHERE tag_id = $1",
-          [tagId]
-        );
+        const { rows } = await client.query("SELECT * FROM todo_tags WHERE tag_id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(rows).toHaveLength(2);
@@ -368,10 +333,10 @@ describe("Tag Database Operations", () => {
         expect(before).toHaveLength(1);
 
         // Remove the tag
-        await client.query(
-          "DELETE FROM todo_tags WHERE todo_id = $1 AND tag_id = $2",
-          [todoId, tagId]
-        );
+        await client.query("DELETE FROM todo_tags WHERE todo_id = $1 AND tag_id = $2", [
+          todoId,
+          tagId,
+        ]);
 
         // Verify it was removed
         const { rows: after } = await client.query(
@@ -381,14 +346,10 @@ describe("Tag Database Operations", () => {
         expect(after).toHaveLength(0);
 
         // Both todo and tag should still exist (check with tenant context)
-        const { rows: todoCheck } = await client.query(
-          "SELECT id FROM todos WHERE id = $1",
-          [todoId]
-        );
-        const { rows: tagCheck } = await client.query(
-          "SELECT id FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows: todoCheck } = await client.query("SELECT id FROM todos WHERE id = $1", [
+          todoId,
+        ]);
+        const { rows: tagCheck } = await client.query("SELECT id FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(todoCheck).toHaveLength(1);
@@ -408,27 +369,22 @@ describe("Tag Database Operations", () => {
         await setTenantContext(client, tenantId);
 
         // Verify todo_tags entry exists
-        const { rows: before } = await client.query(
-          "SELECT * FROM todo_tags WHERE todo_id = $1",
-          [todoId]
-        );
+        const { rows: before } = await client.query("SELECT * FROM todo_tags WHERE todo_id = $1", [
+          todoId,
+        ]);
         expect(before).toHaveLength(1);
 
         // Delete todo
         await client.query("DELETE FROM todos WHERE id = $1", [todoId]);
 
         // Verify todo_tags entry is also deleted (query will return 0 due to cascade)
-        const { rows: after } = await client.query(
-          "SELECT * FROM todo_tags WHERE todo_id = $1",
-          [todoId]
-        );
+        const { rows: after } = await client.query("SELECT * FROM todo_tags WHERE todo_id = $1", [
+          todoId,
+        ]);
         expect(after).toHaveLength(0);
 
         // But tag should still exist (check with tenant context)
-        const { rows: tagCheck } = await client.query(
-          "SELECT id FROM tags WHERE id = $1",
-          [tagId]
-        );
+        const { rows: tagCheck } = await client.query("SELECT id FROM tags WHERE id = $1", [tagId]);
         await resetTenantContext(client);
 
         expect(tagCheck).toHaveLength(1);

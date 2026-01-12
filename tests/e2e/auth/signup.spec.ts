@@ -67,7 +67,10 @@ test.describe("Sign Up Flow", () => {
       // Either way, the form should not submit successfully
       await expect(page).toHaveURL("/signup");
       // Check for either custom validation error or browser validation
-      const hasCustomError = await page.getByTestId("signup-email-error").isVisible().catch(() => false);
+      const hasCustomError = await page
+        .getByTestId("signup-email-error")
+        .isVisible()
+        .catch(() => false);
       const stillOnPage = await page.locator("#email").isVisible();
       expect(hasCustomError || stillOnPage).toBe(true);
     });
@@ -90,14 +93,10 @@ test.describe("Sign Up Flow", () => {
       await page.fill("#confirmPassword", "ValidPassword123!");
       await page.click("button[type='submit']");
 
-      await expect(
-        page.locator("text=Username must be at least 3 characters")
-      ).toBeVisible();
+      await expect(page.locator("text=Username must be at least 3 characters")).toBeVisible();
     });
 
-    test("should show error for invalid username characters", async ({
-      page,
-    }) => {
+    test("should show error for invalid username characters", async ({ page }) => {
       await page.goto("/signup");
 
       await page.fill("#email", "valid@example.com");
@@ -107,9 +106,7 @@ test.describe("Sign Up Flow", () => {
       await page.click("button[type='submit']");
 
       await expect(
-        page.locator(
-          "text=Username can only contain letters, numbers, underscores, and hyphens"
-        )
+        page.locator("text=Username can only contain letters, numbers, underscores, and hyphens")
       ).toBeVisible();
     });
 
@@ -132,9 +129,7 @@ test.describe("Sign Up Flow", () => {
       await page.fill("#confirmPassword", "short");
       await page.click("button[type='submit']");
 
-      await expect(
-        page.locator("text=Password must be at least 8 characters")
-      ).toBeVisible();
+      await expect(page.locator("text=Password must be at least 8 characters")).toBeVisible();
     });
 
     test("should show password mismatch error", async ({ page }) => {
@@ -190,9 +185,7 @@ test.describe("Sign Up Flow", () => {
 
       // Verify session cookie is set
       const cookies = await context.cookies();
-      const sessionCookie = cookies.find(
-        (cookie) => cookie.name === "session_token"
-      );
+      const sessionCookie = cookies.find((cookie) => cookie.name === "session_token");
       expect(sessionCookie).toBeDefined();
       expect(sessionCookie?.value).toBeTruthy();
     });
@@ -268,9 +261,7 @@ test.describe("Sign Up Flow", () => {
       await page.click("button[type='submit']");
 
       // Should show error about email already in use
-      await expect(
-        page.getByTestId("signup-form-error")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.getByTestId("signup-form-error")).toBeVisible({ timeout: 10000 });
     });
 
     test("should show error for duplicate username", async ({ page }) => {
@@ -283,16 +274,12 @@ test.describe("Sign Up Flow", () => {
       await page.click("button[type='submit']");
 
       // Should show error about username already in use
-      await expect(
-        page.getByTestId("signup-form-error")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.getByTestId("signup-form-error")).toBeVisible({ timeout: 10000 });
     });
   });
 
   test.describe("Navigation from Landing Page", () => {
-    test("should navigate to signup from Get Started button", async ({
-      page,
-    }) => {
+    test("should navigate to signup from Get Started button", async ({ page }) => {
       await page.goto("/");
       await page.click("text=Get Started");
       await expect(page).toHaveURL("/signup");

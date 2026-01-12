@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -25,8 +25,8 @@ services:
     image: mailhog/mailhog:latest
     container_name: todo-mailhog
     ports:
-      - "40025:1025"  # SMTP server
-      - "40080:8025"  # Web UI
+      - "40025:1025" # SMTP server
+      - "40080:8025" # Web UI
     networks:
       - todo-network
 

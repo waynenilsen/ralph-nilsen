@@ -64,14 +64,10 @@ test.describe("Password Reset Flow", () => {
       await page.goto("/reset-password");
       await page.click("button[type='submit']");
 
-      await expect(
-        page.locator("text=Please enter your email address")
-      ).toBeVisible();
+      await expect(page.locator("text=Please enter your email address")).toBeVisible();
     });
 
-    test("should show success message after valid email submission", async ({
-      page,
-    }) => {
+    test("should show success message after valid email submission", async ({ page }) => {
       await page.goto("/reset-password");
 
       await page.fill("#email", testUser.email);
@@ -83,9 +79,7 @@ test.describe("Password Reset Flow", () => {
       });
     });
 
-    test("should show success message for non-existent email", async ({
-      page,
-    }) => {
+    test("should show success message for non-existent email", async ({ page }) => {
       await page.goto("/reset-password");
 
       await page.fill("#email", "nonexistent@example.com");
@@ -156,25 +150,17 @@ test.describe("Password Reset Flow", () => {
   });
 
   test.describe("Reset Password Form", () => {
-    test("should show invalid token message for bad token", async ({
-      page,
-    }) => {
+    test("should show invalid token message for bad token", async ({ page }) => {
       await page.goto("/reset-password/invalid-token-12345");
 
-      await expect(
-        page.locator("text=Invalid or expired link")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Invalid or expired link")).toBeVisible({ timeout: 10000 });
       await expect(page.locator("text=Request New Link")).toBeVisible();
     });
 
-    test("should navigate to request form from invalid token page", async ({
-      page,
-    }) => {
+    test("should navigate to request form from invalid token page", async ({ page }) => {
       await page.goto("/reset-password/invalid-token-12345");
 
-      await expect(
-        page.locator("text=Invalid or expired link")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Invalid or expired link")).toBeVisible({ timeout: 10000 });
 
       await page.click("text=Request New Link");
       await expect(page).toHaveURL("/reset-password");
@@ -222,18 +208,14 @@ test.describe("Password Reset Flow", () => {
       await page.click("button[type='submit']");
 
       // Step 4: Should show success and redirect to signin
-      await expect(
-        page.locator("text=Password reset successful")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Password reset successful")).toBeVisible({ timeout: 10000 });
 
       // Wait for redirect or click sign in link
       await page.waitForTimeout(3500); // The page has a 3 second auto-redirect
       await expect(page).toHaveURL("/signin", { timeout: 5000 });
     });
 
-    test("should be able to signin with new password after reset", async ({
-      page,
-    }) => {
+    test("should be able to signin with new password after reset", async ({ page }) => {
       const mailHogAvailable = await checkMailHogConnection();
       test.skip(!mailHogAvailable, "MailHog not available");
 
@@ -247,8 +229,14 @@ test.describe("Password Reset Flow", () => {
 
       // If password was reset successfully, should redirect to app
       // If not, we'll get invalid credentials (which is expected if reset flow test was skipped)
-      const isOnApp = await page.waitForURL("/app/todos", { timeout: 5000 }).then(() => true).catch(() => false);
-      const hasError = await page.locator("text=Invalid credentials").isVisible().catch(() => false);
+      const isOnApp = await page
+        .waitForURL("/app/todos", { timeout: 5000 })
+        .then(() => true)
+        .catch(() => false);
+      const hasError = await page
+        .locator("text=Invalid credentials")
+        .isVisible()
+        .catch(() => false);
 
       // Either should work - password was reset, or we get error if reset test was skipped
       expect(isOnApp || hasError).toBe(true);
@@ -295,9 +283,7 @@ test.describe("Password Reset Flow", () => {
       await page.fill("#password", "short");
       await page.fill("#confirmPassword", "short");
       await page.click("button[type='submit']");
-      await expect(
-        page.locator("text=Password must be at least 8 characters")
-      ).toBeVisible();
+      await expect(page.locator("text=Password must be at least 8 characters")).toBeVisible();
 
       // Test password mismatch
       await page.fill("#password", "ValidPassword123!");
@@ -308,9 +294,7 @@ test.describe("Password Reset Flow", () => {
   });
 
   test.describe("Used Token Handling", () => {
-    test("should show error when using already-used token", async ({
-      page,
-    }) => {
+    test("should show error when using already-used token", async ({ page }) => {
       const mailHogAvailable = await checkMailHogConnection();
       test.skip(!mailHogAvailable, "MailHog not available");
 
@@ -345,17 +329,13 @@ test.describe("Password Reset Flow", () => {
       await page.fill("#confirmPassword", "AnotherPassword789!");
       await page.click("button[type='submit']");
 
-      await expect(
-        page.locator("text=Password reset successful")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Password reset successful")).toBeVisible({ timeout: 10000 });
 
       // Try to use the same token again
       await page.goto(`/reset-password/${token}`);
 
       // Should show invalid/expired message
-      await expect(
-        page.locator("text=Invalid or expired link")
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Invalid or expired link")).toBeVisible({ timeout: 10000 });
     });
   });
 });

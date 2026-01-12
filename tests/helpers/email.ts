@@ -85,7 +85,7 @@ export async function getMailHogEmails(limit: number = 50): Promise<MailHogMessa
 
     const data = await response.json();
     // MailHog v1 API returns an array directly, v2 returns {items: [...]}
-    return Array.isArray(data) ? data : (data.items || []);
+    return Array.isArray(data) ? data : data.items || [];
   } catch (error) {
     console.error("Failed to fetch MailHog emails:", error);
     return [];
@@ -100,11 +100,7 @@ export async function getEmailsTo(email: string): Promise<MailHogMessage[]> {
   const [mailbox, domain] = email.toLowerCase().split("@");
 
   return allEmails.filter((msg) =>
-    msg.To.some(
-      (to) =>
-        to.Mailbox.toLowerCase() === mailbox &&
-        to.Domain.toLowerCase() === domain
-    )
+    msg.To.some((to) => to.Mailbox.toLowerCase() === mailbox && to.Domain.toLowerCase() === domain)
   );
 }
 
@@ -199,7 +195,8 @@ export function extractResetToken(message: MailHogMessage): string | null {
   const decodedBody = decodeQuotedPrintable(body);
 
   // Look for reset URL pattern (UUID format)
-  const resetUrlPattern = /\/reset-password\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
+  const resetUrlPattern =
+    /\/reset-password\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
   const match = decodedBody.match(resetUrlPattern);
 
   if (match && match[1]) {
@@ -280,9 +277,7 @@ export async function assertEmailReceived(
   if (options.bodyContains) {
     const body = getEmailRawData(message);
     if (!body.includes(options.bodyContains)) {
-      throw new Error(
-        `Email body does not contain expected text: ${options.bodyContains}`
-      );
+      throw new Error(`Email body does not contain expected text: ${options.bodyContains}`);
     }
   }
 
@@ -292,10 +287,7 @@ export async function assertEmailReceived(
 /**
  * Assert that no email was received (useful for testing error cases).
  */
-export async function assertNoEmailReceived(
-  email: string,
-  waitMs: number = 2000
-): Promise<void> {
+export async function assertNoEmailReceived(email: string, waitMs: number = 2000): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, waitMs));
   const emails = await getEmailsTo(email);
 

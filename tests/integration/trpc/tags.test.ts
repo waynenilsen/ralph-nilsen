@@ -46,8 +46,13 @@ describe("Tags Router - CRUD with Session Auth", () => {
       await createTestTag(client, tenantId, { name: "Tag3" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -67,8 +72,13 @@ describe("Tags Router - CRUD with Session Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "My Tag", color: "#ff0000" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -89,8 +99,13 @@ describe("Tags Router - CRUD with Session Auth", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -116,8 +131,13 @@ describe("Tags Router - CRUD with Session Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "Original", color: "#000000" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -144,8 +164,13 @@ describe("Tags Router - CRUD with Session Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "To Delete" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -183,7 +208,9 @@ describe("Tags Router - CRUD with API Key Auth", () => {
       await createTestTag(client, tenantId, { name: "API Tag 2" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -205,7 +232,9 @@ describe("Tags Router - CRUD with API Key Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "API Tag" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -227,7 +256,9 @@ describe("Tags Router - CRUD with API Key Auth", () => {
       const { apiKey, userId, tenantId } = await createTestUserWithApiKey(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -253,7 +284,9 @@ describe("Tags Router - CRUD with API Key Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "Original" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -278,7 +311,9 @@ describe("Tags Router - CRUD with API Key Auth", () => {
       const tagId = await createTestTag(client, tenantId, { name: "To Delete" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
 
       const apiKeyObj = createTestApiKeyObject(tenantId, userId);
       const caller = createApiKeyCaller({
@@ -321,8 +356,13 @@ describe("Tags Router - Get Todos by Tag", () => {
       await addTagToTodo(client, tenantId, todo2Id, tagId);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -346,8 +386,13 @@ describe("Tags Router - Get Todos by Tag", () => {
       const tagId = await createTestTag(client, tenantId, { name: "Empty Tag" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -366,8 +411,13 @@ describe("Tags Router - Get Todos by Tag", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -401,8 +451,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       await createTestTag(client, tenantId, { name: "Duplicate" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -410,9 +465,9 @@ describe("Tags Router - Validation and Edge Cases", () => {
         session: sessions[0],
       });
 
-      await expect(
-        caller.tags.create({ name: "Duplicate" })
-      ).rejects.toThrow("A tag with this name already exists");
+      await expect(caller.tags.create({ name: "Duplicate" })).rejects.toThrow(
+        "A tag with this name already exists"
+      );
     });
   });
 
@@ -423,8 +478,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       await createTestTag(client, tenantId, { name: "Tag2" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -432,9 +492,9 @@ describe("Tags Router - Validation and Edge Cases", () => {
         session: sessions[0],
       });
 
-      await expect(
-        caller.tags.update({ id: tag1Id, data: { name: "Tag2" } })
-      ).rejects.toThrow("A tag with this name already exists");
+      await expect(caller.tags.update({ id: tag1Id, data: { name: "Tag2" } })).rejects.toThrow(
+        "A tag with this name already exists"
+      );
     });
   });
 
@@ -444,8 +504,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       const tagId = await createTestTag(client, tenantId, { name: "Tag" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -453,9 +518,9 @@ describe("Tags Router - Validation and Edge Cases", () => {
         session: sessions[0],
       });
 
-      await expect(
-        caller.tags.update({ id: tagId, data: {} })
-      ).rejects.toThrow("No fields to update");
+      await expect(caller.tags.update({ id: tagId, data: {} })).rejects.toThrow(
+        "No fields to update"
+      );
     });
   });
 
@@ -468,8 +533,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       await createTestTag(client, tenantId, { name: "Middle" });
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -490,8 +560,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -515,8 +590,13 @@ describe("Tags Router - Validation and Edge Cases", () => {
       await addTagToTodo(client, tenantId, todoId, tagId);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -561,8 +641,13 @@ describe("Tags Router - Error Cases", () => {
       const { sessionToken, userId, tenantId } = await createTestUserWithSession(client);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
-      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [tenantId]);
-      const { rows: sessions } = await client.query("SELECT * FROM sessions WHERE session_token = $1", [sessionToken]);
+      const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
+        tenantId,
+      ]);
+      const { rows: sessions } = await client.query(
+        "SELECT * FROM sessions WHERE session_token = $1",
+        [sessionToken]
+      );
 
       const caller = createSessionCaller({
         user: users[0],
@@ -570,9 +655,9 @@ describe("Tags Router - Error Cases", () => {
         session: sessions[0],
       });
 
-      await expect(
-        caller.tags.get({ id: "00000000-0000-0000-0000-000000000000" })
-      ).rejects.toThrow("Tag not found");
+      await expect(caller.tags.get({ id: "00000000-0000-0000-0000-000000000000" })).rejects.toThrow(
+        "Tag not found"
+      );
     });
   });
 });

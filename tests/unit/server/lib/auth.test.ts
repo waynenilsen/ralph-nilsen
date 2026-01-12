@@ -1,10 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import {
-  hashApiKey,
-  compareApiKey,
-  generateApiKey,
-  validateAdminApiKey,
-} from "@/server/lib/auth";
+import { hashApiKey, compareApiKey, generateApiKey, validateAdminApiKey } from "@/server/lib/auth";
 
 describe("Auth Library - Unit Tests", () => {
   describe("hashApiKey", () => {

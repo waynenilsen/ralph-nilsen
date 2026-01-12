@@ -3,7 +3,8 @@ import { readdir, readFile } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-const DATABASE_URL = process.env.DATABASE_URL_ADMIN || "postgresql://todo_user:todo_pass@localhost:40001/todo_db";
+const DATABASE_URL =
+  process.env.DATABASE_URL_ADMIN || "postgresql://todo_user:todo_pass@localhost:40001/todo_db";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function migrate() {

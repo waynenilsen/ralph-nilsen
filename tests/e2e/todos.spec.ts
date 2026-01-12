@@ -92,7 +92,13 @@ test.describe("Todos", () => {
     await expect(page.locator(`text=${todoTitle}`)).toBeVisible({ timeout: 10000 });
 
     // Click the checkbox to mark as complete
-    await page.locator(`text=${todoTitle}`).locator("..").locator("..").locator("button").first().click();
+    await page
+      .locator(`text=${todoTitle}`)
+      .locator("..")
+      .locator("..")
+      .locator("button")
+      .first()
+      .click();
 
     // Should move to completed section
     await expect(page.locator("text=Completed")).toBeVisible({ timeout: 10000 });

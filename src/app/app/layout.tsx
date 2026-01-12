@@ -55,24 +55,15 @@ function OrgSwitcher({
           <DropdownMenuItem
             key={org.tenant_id}
             onClick={() => onSwitch(org.tenant_id)}
-            className={
-              currentTenant?.id === org.tenant_id
-                ? "bg-primary/10 text-primary"
-                : ""
-            }
+            className={currentTenant?.id === org.tenant_id ? "bg-primary/10 text-primary" : ""}
           >
             <span className="truncate flex-1">{org.tenant.name}</span>
-            {currentTenant?.id === org.tenant_id && (
-              <Check className="size-4 text-primary" />
-            )}
+            {currentTenant?.id === org.tenant_id && <Check className="size-4 text-primary" />}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link
-            href="/app/organizations"
-            className="text-primary flex items-center gap-2"
-          >
+          <Link href="/app/organizations" className="text-primary flex items-center gap-2">
             <Plus className="size-4" />
             Manage Organizations
           </Link>
@@ -82,13 +73,7 @@ function OrgSwitcher({
   );
 }
 
-function UserMenu({
-  user,
-  onSignOut,
-}: {
-  user: UserPublic;
-  onSignOut: () => void;
-}) {
+function UserMenu({ user, onSignOut }: { user: UserPublic; onSignOut: () => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -104,9 +89,7 @@ function UserMenu({
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="font-medium text-sm">{user.username}</p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user.email}
-            </p>
+            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -187,9 +170,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
                   <ClipboardCheck className="size-5 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-xl hidden sm:inline">
-                  Todo App
-                </span>
+                <span className="font-bold text-xl hidden sm:inline">Todo App</span>
               </Link>
 
               {orgs && (
@@ -210,9 +191,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     variant={pathname === item.href ? "secondary" : "ghost"}
                     size="sm"
                     asChild
-                    className={
-                      pathname === item.href ? "bg-primary/10 text-primary" : ""
-                    }
+                    className={pathname === item.href ? "bg-primary/10 text-primary" : ""}
                   >
                     <Link href={item.href}>
                       <Icon className="size-4" />
@@ -255,9 +234,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           children
         ) : (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold mb-2">
-              No organization selected
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">No organization selected</h2>
             <p className="text-muted-foreground mb-4">
               Please select or create an organization to continue.
             </p>
