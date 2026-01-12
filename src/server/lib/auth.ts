@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { pool, adminPool } from "@/server/db";
+import { adminPool } from "@/server/db";
 import type { ApiKey, Tenant, User } from "@/shared/types";
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || "12", 10);
@@ -115,7 +115,7 @@ export async function createApiKeyForTenant(
   const apiKey = generateApiKey();
   const keyHash = await hashApiKey(apiKey);
 
-  const client = await pool.connect();
+  const client = await adminPool.connect();
   try {
     const { rows } = await client.query<ApiKey>(
       `INSERT INTO api_keys (tenant_id, user_id, key_hash, name, expires_at)

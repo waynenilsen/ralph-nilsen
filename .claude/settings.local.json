@@ -31,7 +31,11 @@
       "Skill(cleanup)",
       "Bash(git commit:*)",
       "Bash(gh issue view:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "Bash(psql:*)",
+      "Bash(PGPASSWORD=todo_pass psql:*)",
+      "Bash(docker compose:*)"
     ]
   }
 }

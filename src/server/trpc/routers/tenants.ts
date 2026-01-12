@@ -1,20 +1,20 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, adminProcedure } from "../init";
-import { pool } from "@/server/db";
+import { adminPool } from "@/server/db";
 import { createApiKeyForTenant } from "@/server/lib/auth";
 import { CreateTenantSchema, UpdateTenantSchema, type Tenant } from "@/shared/types";
 
 export const tenantsRouter = router({
   list: adminProcedure.query(async () => {
-    const { rows } = await pool.query<Tenant>("SELECT * FROM tenants ORDER BY created_at DESC");
+    const { rows } = await adminPool.query<Tenant>("SELECT * FROM tenants ORDER BY created_at DESC");
     return rows;
   }),
 
   get: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
-      const { rows } = await pool.query<Tenant>("SELECT * FROM tenants WHERE id = $1", [input.id]);
+      const { rows } = await adminPool.query<Tenant>("SELECT * FROM tenants WHERE id = $1", [input.id]);
       if (rows.length === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
       }
@@ -24,12 +24,12 @@ export const tenantsRouter = router({
   create: adminProcedure
     .input(CreateTenantSchema)
     .mutation(async ({ input }) => {
-      const { rows: existing } = await pool.query("SELECT id FROM tenants WHERE slug = $1", [input.slug]);
+      const { rows: existing } = await adminPool.query("SELECT id FROM tenants WHERE slug = $1", [input.slug]);
       if (existing.length > 0) {
         throw new TRPCError({ code: "CONFLICT", message: "A tenant with this slug already exists" });
       }
 
-      const { rows } = await pool.query<Tenant>(
+      const { rows } = await adminPool.query<Tenant>(
         "INSERT INTO tenants (name, slug) VALUES ($1, $2) RETURNING *",
         [input.name, input.slug]
       );
@@ -61,7 +61,7 @@ export const tenantsRouter = router({
       }
 
       values.push(input.id);
-      const { rows } = await pool.query<Tenant>(
+      const { rows } = await adminPool.query<Tenant>(
         `UPDATE tenants SET ${updates.join(", ")} WHERE id = $${idx} RETURNING *`,
         values
       );
@@ -76,7 +76,7 @@ export const tenantsRouter = router({
   delete: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input }) => {
-      const { rowCount } = await pool.query("DELETE FROM tenants WHERE id = $1", [input.id]);
+      const { rowCount } = await adminPool.query("DELETE FROM tenants WHERE id = $1", [input.id]);
       if (rowCount === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
       }
@@ -86,20 +86,20 @@ export const tenantsRouter = router({
   stats: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
-      const { rows: tenantRows } = await pool.query("SELECT id FROM tenants WHERE id = $1", [input.id]);
+      const { rows: tenantRows } = await adminPool.query("SELECT id FROM tenants WHERE id = $1", [input.id]);
       if (tenantRows.length === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
       }
 
-      const { rows: todoStats } = await pool.query(`
+      const { rows: todoStats } = await adminPool.query(`
         SELECT COUNT(*) as total,
                COUNT(*) FILTER (WHERE status = 'pending') as pending,
                COUNT(*) FILTER (WHERE status = 'completed') as completed
         FROM todos WHERE tenant_id = $1
       `, [input.id]);
 
-      const { rows: tagStats } = await pool.query("SELECT COUNT(*) as count FROM tags WHERE tenant_id = $1", [input.id]);
-      const { rows: keyStats } = await pool.query("SELECT COUNT(*) as count FROM api_keys WHERE tenant_id = $1 AND is_active = true", [input.id]);
+      const { rows: tagStats } = await adminPool.query("SELECT COUNT(*) as count FROM tags WHERE tenant_id = $1", [input.id]);
+      const { rows: keyStats } = await adminPool.query("SELECT COUNT(*) as count FROM api_keys WHERE tenant_id = $1 AND is_active = true", [input.id]);
 
       return {
         todos: {
@@ -119,7 +119,7 @@ export const tenantsRouter = router({
       expiresAt: z.string().datetime().optional(),
     }))
     .mutation(async ({ input }) => {
-      const { rows } = await pool.query("SELECT id FROM tenants WHERE id = $1", [input.tenantId]);
+      const { rows } = await adminPool.query("SELECT id FROM tenants WHERE id = $1", [input.tenantId]);
       if (rows.length === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
       }

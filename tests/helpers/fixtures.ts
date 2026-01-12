@@ -266,13 +266,14 @@ export async function createTestPasswordResetToken(
     used?: boolean;
   } = {}
 ): Promise<string> {
-  const token = `reset_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const token = crypto.randomUUID();
   const expiresAt = options.expiresAt || new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  const usedAt = options.used ? new Date() : null;
 
   await client.query(
-    `INSERT INTO password_reset_tokens (user_id, token, expires_at, used)
+    `INSERT INTO password_reset_tokens (user_id, token, expires_at, used_at)
      VALUES ($1, $2, $3, $4)`,
-    [userId, token, expiresAt, options.used || false]
+    [userId, token, expiresAt, usedAt]
   );
 
   return token;
