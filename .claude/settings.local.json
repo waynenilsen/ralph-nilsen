@@ -35,7 +35,10 @@
       "Bash(git push:*)",
       "Bash(psql:*)",
       "Bash(PGPASSWORD=todo_pass psql:*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "Bash(gh project view:*)",
+      "Bash(bunx playwright install:*)",
+      "Bash(git reset:*)"
     ]
   }
 }

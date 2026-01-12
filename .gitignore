@@ -38,3 +38,4 @@ out/
 
 # Misc
 .vercel
+test-results/.last-run.json

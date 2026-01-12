@@ -83,8 +83,9 @@ export async function getMailHogEmails(limit: number = 50): Promise<MailHogMessa
       throw new Error(`MailHog API error: ${response.status}`);
     }
 
-    const data: MailHogResponse = await response.json();
-    return data.items || [];
+    const data = await response.json();
+    // MailHog v1 API returns an array directly, v2 returns {items: [...]}
+    return Array.isArray(data) ? data : (data.items || []);
   } catch (error) {
     console.error("Failed to fetch MailHog emails:", error);
     return [];
@@ -175,25 +176,41 @@ export function getEmailRawData(message: MailHogMessage): string {
 }
 
 /**
+ * Decode quoted-printable encoding.
+ * Handles soft line breaks (=\r\n or =\n) and encoded characters (=XX).
+ */
+function decodeQuotedPrintable(str: string): string {
+  // Remove soft line breaks (= followed by newline)
+  let decoded = str.replace(/=\r?\n/g, "");
+  // Decode =XX hex characters
+  decoded = decoded.replace(/=([0-9A-Fa-f]{2})/g, (_, hex) =>
+    String.fromCharCode(parseInt(hex, 16))
+  );
+  return decoded;
+}
+
+/**
  * Extract a password reset token from an email body.
  * Looks for URLs containing /reset-password/ and extracts the token.
  */
 export function extractResetToken(message: MailHogMessage): string | null {
   const body = getEmailRawData(message);
+  // Decode quoted-printable to handle line continuations
+  const decodedBody = decodeQuotedPrintable(body);
 
-  // Look for reset URL pattern
-  const resetUrlPattern = /\/reset-password\/([a-zA-Z0-9_-]+)/;
-  const match = body.match(resetUrlPattern);
+  // Look for reset URL pattern (UUID format)
+  const resetUrlPattern = /\/reset-password\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
+  const match = decodedBody.match(resetUrlPattern);
 
   if (match && match[1]) {
     return match[1];
   }
 
-  // Alternative: look for token directly
-  const tokenPattern = /reset_[a-zA-Z0-9_-]+/;
-  const tokenMatch = body.match(tokenPattern);
+  // Alternative: look for UUID directly
+  const uuidPattern = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/;
+  const uuidMatch = decodedBody.match(uuidPattern);
 
-  return tokenMatch ? tokenMatch[0] : null;
+  return uuidMatch ? uuidMatch[0] : null;
 }
 
 /**

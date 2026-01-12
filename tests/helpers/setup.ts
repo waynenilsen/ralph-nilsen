@@ -37,7 +37,8 @@ export async function cleanupTestData(client: PoolClient): Promise<void> {
   await client.query("DELETE FROM password_reset_tokens");
   await client.query("DELETE FROM api_keys");
   await client.query("DELETE FROM user_tenants");
-  await client.query("DELETE FROM users WHERE email LIKE 'test-%'");
+  // Clean up all test users (email ending in @test.com or starting with test-)
+  await client.query("DELETE FROM users WHERE email LIKE 'test-%' OR email LIKE '%@test.com'");
   await client.query("DELETE FROM tenants WHERE slug LIKE 'test-%'");
 }
 
