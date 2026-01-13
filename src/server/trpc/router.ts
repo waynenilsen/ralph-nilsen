@@ -5,6 +5,7 @@ import { tagsRouter } from "./routers/tags";
 import { authRouter } from "./routers/auth";
 import { organizationsRouter } from "./routers/organizations";
 import { invitationsRouter } from "./routers/invitations";
+import { usersRouter } from "./routers/users";
 import { checkDatabaseHealth } from "@/server/db";
 
 export const appRouter = router({
@@ -23,6 +24,7 @@ export const appRouter = router({
   tenants: tenantsRouter,
   todos: todosRouter,
   tags: tagsRouter,
+  users: usersRouter,
 });
 
 export type AppRouter = typeof appRouter;
