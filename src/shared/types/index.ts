@@ -118,6 +118,7 @@ export const TodoQuerySchema = z.object({
   due_before: z.string().datetime().optional(),
   due_after: z.string().datetime().optional(),
   search: z.string().optional(),
+  assignedTo: z.union([z.literal("me"), z.literal("unassigned"), z.string().uuid()]).optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

@@ -19,6 +19,7 @@ export const todosRouter = router({
     .input(TodoQuerySchema)
     .query(async ({ ctx, input }): Promise<PaginatedResult<Todo>> => {
       const tenantId = ctx.tenant!.id;
+      const currentUserId = ctx.user!.id;
 
       return withTenantContext(tenantId, async (client) => {
         const conditions: string[] = [];
@@ -26,31 +27,45 @@ export const todosRouter = router({
         let idx = 1;
 
         if (input.status) {
-          conditions.push(`status = $${idx++}`);
+          conditions.push(`t.status = $${idx++}`);
           values.push(input.status);
         }
         if (input.priority) {
-          conditions.push(`priority = $${idx++}`);
+          conditions.push(`t.priority = $${idx++}`);
           values.push(input.priority);
         }
         if (input.due_before) {
-          conditions.push(`due_date <= $${idx++}`);
+          conditions.push(`t.due_date <= $${idx++}`);
           values.push(input.due_before);
         }
         if (input.due_after) {
-          conditions.push(`due_date >= $${idx++}`);
+          conditions.push(`t.due_date >= $${idx++}`);
           values.push(input.due_after);
         }
         if (input.search) {
-          conditions.push(`(title ILIKE $${idx} OR description ILIKE $${idx})`);
+          conditions.push(`(t.title ILIKE $${idx} OR t.description ILIKE $${idx})`);
           values.push(`%${input.search}%`);
           idx++;
+        }
+
+        // Handle assignedTo filter
+        if (input.assignedTo) {
+          if (input.assignedTo === "me") {
+            conditions.push(`EXISTS (SELECT 1 FROM todo_assignments ta WHERE ta.todo_id = t.id AND ta.user_id = $${idx++})`);
+            values.push(currentUserId);
+          } else if (input.assignedTo === "unassigned") {
+            conditions.push(`NOT EXISTS (SELECT 1 FROM todo_assignments ta WHERE ta.todo_id = t.id)`);
+          } else {
+            // Specific user ID
+            conditions.push(`EXISTS (SELECT 1 FROM todo_assignments ta WHERE ta.todo_id = t.id AND ta.user_id = $${idx++})`);
+            values.push(input.assignedTo);
+          }
         }
 
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const countResult = await client.query(
-          `SELECT COUNT(*) as total FROM todos ${whereClause}`,
+          `SELECT COUNT(*) as total FROM todos t ${whereClause}`,
           values
         );
         const total = Number(countResult.rows[0]?.total || 0);
@@ -61,12 +76,14 @@ export const todosRouter = router({
 
         values.push(limit, offset);
         const { rows: todos } = await client.query<Todo>(
-          `SELECT * FROM todos ${whereClause} ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx}`,
+          `SELECT t.* FROM todos t ${whereClause} ORDER BY t.created_at DESC LIMIT $${idx++} OFFSET $${idx}`,
           values
         );
 
         if (todos.length > 0) {
           const todoIds = todos.map((t) => t.id);
+
+          // Fetch tags
           const { rows: todoTags } = await client.query<{
             todo_id: string;
             id: string;
@@ -93,8 +110,39 @@ export const todosRouter = router({
             tagsByTodo.set(tt.todo_id, tags);
           }
 
+          // Fetch assignees
+          const { rows: todoAssignees } = await client.query<{
+            todo_id: string;
+            id: string;
+            email: string;
+            username: string;
+            assigned_by: string;
+            assigned_at: Date;
+          }>(
+            `SELECT ta.todo_id, u.id, u.email, u.username, ta.assigned_by, ta.assigned_at
+             FROM todo_assignments ta
+             JOIN users u ON u.id = ta.user_id
+             WHERE ta.todo_id = ANY($1)`,
+            [todoIds]
+          );
+
+          const assigneesByTodo = new Map<string, TodoAssignee[]>();
+          for (const ta of todoAssignees) {
+            const assignees = assigneesByTodo.get(ta.todo_id) || [];
+            assignees.push({
+              id: ta.id,
+              email: ta.email,
+              username: ta.username,
+              assigned_by: ta.assigned_by,
+              assigned_at: ta.assigned_at,
+            });
+            assigneesByTodo.set(ta.todo_id, assignees);
+          }
+
           for (const todo of todos) {
             todo.tags = tagsByTodo.get(todo.id) || [];
+            todo.assignees = assigneesByTodo.get(todo.id) || [];
+            todo.assigned_to_me = todo.assignees.some((a) => a.id === currentUserId);
           }
         }
 
@@ -106,6 +154,8 @@ export const todosRouter = router({
     }),
 
   get: userProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ ctx, input }) => {
+    const currentUserId = ctx.user!.id;
+
     return withTenantContext(ctx.tenant!.id, async (client) => {
       const { rows } = await client.query<Todo>("SELECT * FROM todos WHERE id = $1", [input.id]);
       if (rows.length === 0) {
@@ -117,6 +167,17 @@ export const todosRouter = router({
         [input.id]
       );
       rows[0]!.tags = tags;
+
+      // Fetch assignees with full information
+      const { rows: assignees } = await client.query<TodoAssignee>(
+        `SELECT u.id, u.email, u.username, ta.assigned_by, ta.assigned_at
+         FROM todo_assignments ta
+         JOIN users u ON u.id = ta.user_id
+         WHERE ta.todo_id = $1`,
+        [input.id]
+      );
+      rows[0]!.assignees = assignees;
+      rows[0]!.assigned_to_me = assignees.some((a) => a.id === currentUserId);
 
       return rows[0]!;
     });
