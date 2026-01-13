@@ -42,6 +42,8 @@ export interface Todo {
   created_at: Date;
   updated_at: Date;
   tags?: Tag[];
+  assignees?: TodoAssignee[];
+  assigned_to_me?: boolean;
 }
 
 export const CreateTodoSchema = z.object({
@@ -341,3 +343,34 @@ export interface OrganizationMember {
   role: UserRole;
   joinedAt: Date;
 }
+
+// Todo Assignment types
+export interface TodoAssignment {
+  id: string;
+  todo_id: string;
+  user_id: string;
+  assigned_by: string;
+  assigned_at: Date;
+}
+
+export interface TodoAssignee {
+  id: string;
+  email: string;
+  username: string;
+  assigned_by: string;
+  assigned_at: Date;
+}
+
+export const AssignTodoSchema = z.object({
+  todoId: z.string().uuid("Invalid todo ID"),
+  userIds: z.array(z.string().uuid("Invalid user ID")).min(1, "At least one user ID is required"),
+});
+
+export type AssignTodoInput = z.infer<typeof AssignTodoSchema>;
+
+export const UnassignTodoSchema = z.object({
+  todoId: z.string().uuid("Invalid todo ID"),
+  userId: z.string().uuid("Invalid user ID"),
+});
+
+export type UnassignTodoInput = z.infer<typeof UnassignTodoSchema>;
