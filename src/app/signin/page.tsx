@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ClipboardCheck, AlertCircle } from "lucide-react";
 import { TRPCSessionProvider } from "@/client/components/TRPCSessionProvider";
 import { trpc } from "@/client/lib/trpc";
@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 function SigninForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("invite");
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -23,7 +26,13 @@ function SigninForm() {
   const signin = trpc.auth.signin.useMutation({
     onSuccess: async (data) => {
       document.cookie = `session_token=${data.sessionToken}; path=/; max-age=${30 * 24 * 60 * 60}; samesite=lax`;
-      router.push("/app/todos");
+
+      // If there's an invite token, redirect to invitation page to accept
+      if (inviteToken) {
+        router.push(`/invitations/${inviteToken}`);
+      } else {
+        router.push("/app/todos");
+      }
     },
     onError: (error) => {
       setError(error.message);
@@ -105,7 +114,9 @@ export default function SigninPage() {
               <CardDescription>Sign in to your account</CardDescription>
             </CardHeader>
             <CardContent>
-              <SigninForm />
+              <Suspense fallback={<div className="flex justify-center py-4"><Spinner className="size-6" /></div>}>
+                <SigninForm />
+              </Suspense>
             </CardContent>
           </Card>
 

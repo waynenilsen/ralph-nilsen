@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ClipboardCheck, AlertCircle } from "lucide-react";
 import { TRPCSessionProvider } from "@/client/components/TRPCSessionProvider";
 import { trpc } from "@/client/lib/trpc";
@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("invite");
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -22,10 +25,23 @@ function SignupForm() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const acceptInvitation = trpc.invitations.accept.useMutation();
+
   const signup = trpc.auth.signup.useMutation({
     onSuccess: async (data) => {
       // Set the session cookie via a server action or API route
       document.cookie = `session_token=${data.sessionToken}; path=/; max-age=${30 * 24 * 60 * 60}; samesite=lax`;
+
+      // If there's an invite token, accept the invitation
+      if (inviteToken) {
+        try {
+          await acceptInvitation.mutateAsync({ token: inviteToken });
+        } catch (error) {
+          console.error("Failed to accept invitation:", error);
+          // Still proceed to app even if invitation acceptance fails
+        }
+      }
+
       router.push("/app/todos");
     },
     onError: (error) => {
@@ -181,7 +197,9 @@ export default function SignupPage() {
               <CardDescription>Start organizing your tasks today</CardDescription>
             </CardHeader>
             <CardContent>
-              <SignupForm />
+              <Suspense fallback={<div className="flex justify-center py-4"><Spinner className="size-6" /></div>}>
+                <SignupForm />
+              </Suspense>
             </CardContent>
           </Card>
 
