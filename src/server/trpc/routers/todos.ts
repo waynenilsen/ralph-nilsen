@@ -1,17 +1,19 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, userProcedure } from "../init";
-import { withTenantContext, withTenantTransaction } from "@/server/db";
+import { withTenantContext, withTenantTransaction, pool } from "@/server/db";
 import {
   CreateTodoSchema,
   UpdateTodoSchema,
   TodoQuerySchema,
   AssignTodoSchema,
   UnassignTodoSchema,
+  AssignedToMeQuerySchema,
   type Todo,
   type Tag,
   type PaginatedResult,
   type TodoAssignee,
+  type TodoWithOrganization,
 } from "@/shared/types";
 
 export const todosRouter = router({
@@ -481,5 +483,182 @@ export const todosRouter = router({
 
         return updatedTodo;
       });
+    }),
+
+  getAssignedToMe: userProcedure
+    .input(AssignedToMeQuerySchema)
+    .query(async ({ ctx, input }): Promise<PaginatedResult<TodoWithOrganization>> => {
+      const currentUserId = ctx.user!.id;
+
+      // Use pool directly to query across all organizations
+      const client = await pool.connect();
+      try {
+        // Build filter conditions
+        const conditions: string[] = [];
+        const values: unknown[] = [];
+        let idx = 1;
+
+        // Always filter by current user's assignments
+        values.push(currentUserId);
+        const userIdxParam = `$${idx++}`;
+
+        if (input.status) {
+          conditions.push(`t.status = $${idx++}`);
+          values.push(input.status);
+        }
+        if (input.priority) {
+          conditions.push(`t.priority = $${idx++}`);
+          values.push(input.priority);
+        }
+        if (input.search) {
+          conditions.push(`(t.title ILIKE $${idx} OR t.description ILIKE $${idx})`);
+          values.push(`%${input.search}%`);
+          idx++;
+        }
+
+        const whereClause = conditions.length > 0 ? `AND ${conditions.join(" AND ")}` : "";
+
+        // Get total count
+        const countQuery = `
+          SELECT COUNT(DISTINCT t.id) as total
+          FROM todos t
+          INNER JOIN todo_assignments ta ON ta.todo_id = t.id
+          INNER JOIN tenants tn ON tn.id = t.tenant_id
+          INNER JOIN user_tenants ut ON ut.tenant_id = tn.id AND ut.user_id = ${userIdxParam}
+          WHERE ta.user_id = ${userIdxParam} ${whereClause}
+        `;
+
+        const countResult = await client.query(countQuery, values);
+        const total = Number(countResult.rows[0]?.total || 0);
+
+        const limit = input.limit;
+        const offset = (input.page - 1) * limit;
+        const totalPages = Math.ceil(total / limit);
+
+        // Get todos with organization info
+        // Order by: priority (high first), then due_date (soonest first, nulls last), then created_at (newest first)
+        values.push(limit, offset);
+        const todosQuery = `
+          SELECT
+            t.*,
+            tn.id as org_id,
+            tn.name as org_name,
+            tn.slug as org_slug
+          FROM todos t
+          INNER JOIN todo_assignments ta ON ta.todo_id = t.id
+          INNER JOIN tenants tn ON tn.id = t.tenant_id
+          INNER JOIN user_tenants ut ON ut.tenant_id = tn.id AND ut.user_id = ${userIdxParam}
+          WHERE ta.user_id = ${userIdxParam} ${whereClause}
+          ORDER BY
+            CASE t.priority
+              WHEN 'high' THEN 1
+              WHEN 'medium' THEN 2
+              WHEN 'low' THEN 3
+            END,
+            t.due_date ASC NULLS LAST,
+            t.created_at DESC
+          LIMIT $${idx++} OFFSET $${idx}
+        `;
+
+        const { rows: todoRows } = await client.query<
+          Todo & { org_id: string; org_name: string; org_slug: string }
+        >(todosQuery, values);
+
+        // Transform to TodoWithOrganization and fetch tags + assignees
+        const todos: TodoWithOrganization[] = [];
+
+        if (todoRows.length > 0) {
+          const todoIds = todoRows.map((t) => t.id);
+
+          // Fetch tags for all todos
+          const { rows: todoTags } = await client.query<{
+            todo_id: string;
+            id: string;
+            tenant_id: string;
+            name: string;
+            color: string | null;
+            created_at: Date;
+          }>(
+            `SELECT tt.todo_id, tg.id, tg.tenant_id, tg.name, tg.color, tg.created_at
+             FROM todo_tags tt
+             JOIN tags tg ON tg.id = tt.tag_id
+             WHERE tt.todo_id = ANY($1)`,
+            [todoIds]
+          );
+
+          const tagsByTodo = new Map<string, Tag[]>();
+          for (const tt of todoTags) {
+            const tags = tagsByTodo.get(tt.todo_id) || [];
+            tags.push({
+              id: tt.id,
+              tenant_id: tt.tenant_id,
+              name: tt.name,
+              color: tt.color,
+              created_at: tt.created_at,
+            });
+            tagsByTodo.set(tt.todo_id, tags);
+          }
+
+          // Fetch assignees for all todos
+          const { rows: todoAssignees } = await client.query<{
+            todo_id: string;
+            id: string;
+            email: string;
+            username: string;
+            assigned_by: string;
+            assigned_at: Date;
+          }>(
+            `SELECT ta.todo_id, u.id, u.email, u.username, ta.assigned_by, ta.assigned_at
+             FROM todo_assignments ta
+             JOIN users u ON u.id = ta.user_id
+             WHERE ta.todo_id = ANY($1)`,
+            [todoIds]
+          );
+
+          const assigneesByTodo = new Map<string, TodoAssignee[]>();
+          for (const ta of todoAssignees) {
+            const assignees = assigneesByTodo.get(ta.todo_id) || [];
+            assignees.push({
+              id: ta.id,
+              email: ta.email,
+              username: ta.username,
+              assigned_by: ta.assigned_by,
+              assigned_at: ta.assigned_at,
+            });
+            assigneesByTodo.set(ta.todo_id, assignees);
+          }
+
+          // Build final results
+          for (const row of todoRows) {
+            const todo: TodoWithOrganization = {
+              id: row.id,
+              tenant_id: row.tenant_id,
+              title: row.title,
+              description: row.description,
+              status: row.status,
+              priority: row.priority,
+              due_date: row.due_date,
+              created_at: row.created_at,
+              updated_at: row.updated_at,
+              tags: tagsByTodo.get(row.id) || [],
+              assignees: assigneesByTodo.get(row.id) || [],
+              assigned_to_me: true, // Always true since we're querying assigned to current user
+              organization: {
+                id: row.org_id,
+                name: row.org_name,
+                slug: row.org_slug,
+              },
+            };
+            todos.push(todo);
+          }
+        }
+
+        return {
+          data: todos,
+          pagination: { page: input.page, limit, total, total_pages: totalPages },
+        };
+      } finally {
+        client.release();
+      }
     }),
 });

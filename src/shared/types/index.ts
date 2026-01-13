@@ -375,3 +375,23 @@ export const UnassignTodoSchema = z.object({
 });
 
 export type UnassignTodoInput = z.infer<typeof UnassignTodoSchema>;
+
+// Query params for todos assigned to me
+export const AssignedToMeQuerySchema = z.object({
+  status: z.enum(["pending", "completed"]).optional(),
+  priority: z.enum(["low", "medium", "high"]).optional(),
+  search: z.string().optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+});
+
+export type AssignedToMeQuery = z.infer<typeof AssignedToMeQuerySchema>;
+
+// Todo with organization information
+export interface TodoWithOrganization extends Todo {
+  organization: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
