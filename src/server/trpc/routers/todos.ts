@@ -370,8 +370,8 @@ export const todosRouter = router({
         }
 
         // Validate all user IDs are members of the todo's organization
-        const { rows: memberRows } = await client.query<{ user_id: string }>(
-          "SELECT user_id FROM user_tenants WHERE tenant_id = $1 AND user_id = ANY($2)",
+        const { rows: memberRows } = await client.query<{ user_id: string; email: string; username: string }>(
+          "SELECT ut.user_id, u.email, u.username FROM user_tenants ut JOIN users u ON u.id = ut.user_id WHERE ut.tenant_id = $1 AND ut.user_id = ANY($2)",
           [tenantId, input.userIds]
         );
 
@@ -381,6 +381,14 @@ export const todosRouter = router({
             message: "One or more users are not members of this organization",
           });
         }
+
+        // Get existing assignments to determine which users are newly assigned
+        const { rows: existingAssignments } = await client.query<{ user_id: string }>(
+          "SELECT user_id FROM todo_assignments WHERE todo_id = $1 AND user_id = ANY($2)",
+          [input.todoId, input.userIds]
+        );
+        const existingUserIds = new Set(existingAssignments.map(a => a.user_id));
+        const newlyAssignedUserIds = input.userIds.filter(id => !existingUserIds.has(id));
 
         // Create todo_assignments records for each user, preventing duplicates
         for (const userId of input.userIds) {
@@ -411,6 +419,48 @@ export const todosRouter = router({
           [input.todoId]
         );
         todo.tags = tags;
+
+        // Send emails to newly assigned users (don't block on email sending)
+        if (newlyAssignedUserIds.length > 0) {
+          // Get assigner info and organization name
+          const { rows: assignerRows } = await client.query<{ username: string }>(
+            "SELECT username FROM users WHERE id = $1",
+            [currentUserId]
+          );
+          const { rows: orgRows } = await client.query<{ name: string }>(
+            "SELECT name FROM tenants WHERE id = $1",
+            [tenantId]
+          );
+
+          const assignerName = assignerRows[0]?.username || "A team member";
+          const organizationName = orgRows[0]?.name || "your organization";
+
+          // Send emails in parallel without blocking the response
+          const emailPromises = memberRows
+            .filter(member => newlyAssignedUserIds.includes(member.user_id))
+            .map(member =>
+              import("@/server/lib/email").then(({ sendAssignmentEmail }) =>
+                sendAssignmentEmail({
+                  assigneeEmail: member.email,
+                  assigneeName: member.username,
+                  todoId: todo.id,
+                  todoTitle: todo.title,
+                  todoDescription: todo.description,
+                  todoPriority: todo.priority,
+                  todoDueDate: todo.due_date,
+                  assignerName,
+                  organizationName,
+                }).catch(error => {
+                  console.error(`Failed to send assignment email to ${member.email}:`, error);
+                })
+              )
+            );
+
+          // Use Promise.allSettled to handle individual email failures gracefully
+          Promise.allSettled(emailPromises).catch(error => {
+            console.error("Error sending assignment emails:", error);
+          });
+        }
 
         return todo;
       });

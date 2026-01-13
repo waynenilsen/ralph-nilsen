@@ -208,3 +208,97 @@ The Todo App Team`,
 </html>`,
   });
 }
+
+export async function sendAssignmentEmail(params: {
+  assigneeEmail: string;
+  assigneeName: string;
+  todoId: string;
+  todoTitle: string;
+  todoDescription: string | null;
+  todoPriority: "low" | "medium" | "high";
+  todoDueDate: Date | null;
+  assignerName: string;
+  organizationName: string;
+}): Promise<void> {
+  const {
+    assigneeEmail,
+    assigneeName,
+    todoId,
+    todoTitle,
+    todoDescription,
+    todoPriority,
+    todoDueDate,
+    assignerName,
+    organizationName,
+  } = params;
+
+  const todoUrl = `${APP_URL}/app/todos/${todoId}`;
+
+  const priorityColors = {
+    low: "#6b7280",
+    medium: "#f59e0b",
+    high: "#ef4444",
+  };
+
+  const priorityColor = priorityColors[todoPriority];
+  const priorityLabel = todoPriority.charAt(0).toUpperCase() + todoPriority.slice(1);
+
+  const dueDateText = todoDueDate
+    ? new Date(todoDueDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "No due date";
+
+  await sendEmail({
+    to: assigneeEmail,
+    subject: `You've been assigned to: ${todoTitle}`,
+    text: `Hi ${assigneeName},
+
+${assignerName} has assigned you to a task in ${organizationName}.
+
+Task: ${todoTitle}
+${todoDescription ? `\nDescription: ${todoDescription}\n` : ""}
+Priority: ${priorityLabel}
+Due Date: ${dueDateText}
+
+View and manage this task at:
+${todoUrl}
+
+Best regards,
+The Todo App Team`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h1 style="color: #2563eb;">New Task Assignment</h1>
+  <p>Hi ${assigneeName},</p>
+  <p><strong>${assignerName}</strong> has assigned you to a task in <strong>${organizationName}</strong>.</p>
+
+  <div style="background-color: #f9fafb; border-left: 4px solid #2563eb; padding: 16px; margin: 20px 0;">
+    <h2 style="margin-top: 0; color: #1f2937; font-size: 18px;">${todoTitle}</h2>
+    ${todoDescription ? `<p style="color: #4b5563; margin: 8px 0;">${todoDescription}</p>` : ""}
+    <div style="margin-top: 12px;">
+      <span style="display: inline-block; background-color: ${priorityColor}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">
+        ${priorityLabel} Priority
+      </span>
+      <span style="color: #6b7280; font-size: 14px;">
+        Due: ${dueDateText}
+      </span>
+    </div>
+  </div>
+
+  <p style="text-align: center; margin: 30px 0;">
+    <a href="${todoUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Task</a>
+  </p>
+
+  <p>Best regards,<br>The Todo App Team</p>
+</body>
+</html>`,
+  });
+}
