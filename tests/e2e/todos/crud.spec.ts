@@ -256,7 +256,9 @@ test.describe("Todo CRUD Operations", () => {
 
     // Todo should appear (the title will be truncated in display)
     // Just verify it's saved and visible
-    await expect(page.locator(`text=${longTitle.substring(0, 50)}`)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(`text=${longTitle.substring(0, 50)}`)).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should show loading state while creating todo", async () => {

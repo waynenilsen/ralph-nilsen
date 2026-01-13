@@ -89,9 +89,7 @@ export function InviteMemberDialog({ organizationName }: InviteMemberDialogProps
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite Member</DialogTitle>
-          <DialogDescription>
-            Send an invitation to join {organizationName}
-          </DialogDescription>
+          <DialogDescription>Send an invitation to join {organizationName}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -138,11 +136,7 @@ export function InviteMemberDialog({ organizationName }: InviteMemberDialogProps
             </Select>
           </div>
           <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={createInvitation.isPending || !email.trim()}>

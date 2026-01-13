@@ -37,7 +37,9 @@ test.describe("Organization Management", () => {
     await expect(page.locator("h1:has-text('Organizations')")).toBeVisible();
     await expect(page.locator("text=Create Organization")).toBeVisible();
     // Default org created during signup - check for the org card with username in title
-    await expect(page.locator(`[data-slot="card-title"]:has-text("${testUser.username}")`)).toBeVisible({
+    await expect(
+      page.locator(`[data-slot="card-title"]:has-text("${testUser.username}")`)
+    ).toBeVisible({
       timeout: 10000,
     });
   });

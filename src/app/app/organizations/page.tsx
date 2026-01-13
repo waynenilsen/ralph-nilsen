@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Check, Building2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { Plus, Check, Building2, AlertCircle, Users } from "lucide-react";
 import { trpc } from "@/client/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,9 +110,7 @@ export default function OrganizationsPage() {
   });
 
   // Find current user's role in the current organization
-  const currentOrgMembership = orgs?.find(
-    (org) => org.tenant_id === currentOrg?.tenant?.id
-  );
+  const currentOrgMembership = orgs?.find((org) => org.tenant_id === currentOrg?.tenant?.id);
   const canInviteMembers =
     currentOrgMembership?.role === "owner" || currentOrgMembership?.role === "admin";
 
@@ -157,9 +156,17 @@ export default function OrganizationsPage() {
                 </CardHeader>
                 <CardContent>
                   {isCurrent ? (
-                    <div className="flex items-center gap-2 text-sm text-primary">
-                      <Check className="size-4" />
-                      Current organization
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-primary">
+                        <Check className="size-4" />
+                        Current organization
+                      </div>
+                      <Link href="/app/organizations/members">
+                        <Button variant="outline" size="sm" className="w-full">
+                          <Users className="size-4" />
+                          Manage Members
+                        </Button>
+                      </Link>
                     </div>
                   ) : (
                     <Button
