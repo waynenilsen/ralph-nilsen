@@ -6,9 +6,12 @@ import {
   CreateTodoSchema,
   UpdateTodoSchema,
   TodoQuerySchema,
+  AssignTodoSchema,
+  UnassignTodoSchema,
   type Todo,
   type Tag,
   type PaginatedResult,
+  type TodoAssignee,
 } from "@/shared/types";
 
 export const todosRouter = router({
@@ -284,6 +287,138 @@ export const todosRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "Tag not attached to todo" });
         }
         return { success: true };
+      });
+    }),
+
+  assign: userProcedure
+    .input(AssignTodoSchema)
+    .mutation(async ({ ctx, input }) => {
+      const tenantId = ctx.tenant!.id;
+      const currentUserId = ctx.user!.id;
+
+      return withTenantTransaction(tenantId, async (client) => {
+        // Validate todo exists and belongs to current organization
+        const { rows: todoRows } = await client.query<Todo>(
+          "SELECT * FROM todos WHERE id = $1",
+          [input.todoId]
+        );
+        if (todoRows.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Todo not found" });
+        }
+
+        // Validate all user IDs are members of the todo's organization
+        const { rows: memberRows } = await client.query<{ user_id: string }>(
+          "SELECT user_id FROM user_tenants WHERE tenant_id = $1 AND user_id = ANY($2)",
+          [tenantId, input.userIds]
+        );
+
+        if (memberRows.length !== input.userIds.length) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "One or more users are not members of this organization",
+          });
+        }
+
+        // Create todo_assignments records for each user, preventing duplicates
+        for (const userId of input.userIds) {
+          await client.query(
+            `INSERT INTO todo_assignments (todo_id, user_id, assigned_by)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (todo_id, user_id) DO NOTHING`,
+            [input.todoId, userId, currentUserId]
+          );
+        }
+
+        // Return updated todo with full assignee information
+        const { rows: assigneeRows } = await client.query<TodoAssignee>(
+          `SELECT u.id, u.email, u.username, ta.assigned_by, ta.assigned_at
+           FROM todo_assignments ta
+           JOIN users u ON u.id = ta.user_id
+           WHERE ta.todo_id = $1`,
+          [input.todoId]
+        );
+
+        const todo = todoRows[0]!;
+        todo.assignees = assigneeRows;
+        todo.tags = [];
+
+        // Load tags if any
+        const { rows: tags } = await client.query<Tag>(
+          "SELECT tg.* FROM todo_tags tt JOIN tags tg ON tg.id = tt.tag_id WHERE tt.todo_id = $1",
+          [input.todoId]
+        );
+        todo.tags = tags;
+
+        return todo;
+      });
+    }),
+
+  unassign: userProcedure
+    .input(UnassignTodoSchema)
+    .mutation(async ({ ctx, input }) => {
+      const tenantId = ctx.tenant!.id;
+      const currentUserId = ctx.user!.id;
+
+      return withTenantTransaction(tenantId, async (client) => {
+        // Validate todo exists
+        const { rows: todoRows } = await client.query<Todo>(
+          "SELECT * FROM todos WHERE id = $1",
+          [input.todoId]
+        );
+        if (todoRows.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Todo not found" });
+        }
+
+        // Check permissions: can unassign self OR if you're the assigner OR if you're the todo creator
+        const { rows: assignmentRows } = await client.query<{ assigned_by: string }>(
+          "SELECT assigned_by FROM todo_assignments WHERE todo_id = $1 AND user_id = $2",
+          [input.todoId, input.userId]
+        );
+
+        if (assignmentRows.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Assignment not found" });
+        }
+
+        const assignment = assignmentRows[0]!;
+        const todo = todoRows[0]!;
+        const canUnassign =
+          input.userId === currentUserId || // Can unassign self
+          assignment.assigned_by === currentUserId || // Can unassign if you assigned them
+          todo.tenant_id === tenantId; // Todo creator (implied by tenant context)
+
+        if (!canUnassign) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You don't have permission to unassign this user",
+          });
+        }
+
+        // Delete todo_assignments record
+        await client.query(
+          "DELETE FROM todo_assignments WHERE todo_id = $1 AND user_id = $2",
+          [input.todoId, input.userId]
+        );
+
+        // Return updated todo with remaining assignees
+        const { rows: assigneeRows } = await client.query<TodoAssignee>(
+          `SELECT u.id, u.email, u.username, ta.assigned_by, ta.assigned_at
+           FROM todo_assignments ta
+           JOIN users u ON u.id = ta.user_id
+           WHERE ta.todo_id = $1`,
+          [input.todoId]
+        );
+
+        const updatedTodo = todoRows[0]!;
+        updatedTodo.assignees = assigneeRows;
+
+        // Load tags
+        const { rows: tags } = await client.query<Tag>(
+          "SELECT tg.* FROM todo_tags tt JOIN tags tg ON tg.id = tt.tag_id WHERE tt.todo_id = $1",
+          [input.todoId]
+        );
+        updatedTodo.tags = tags;
+
+        return updatedTodo;
       });
     }),
 });
