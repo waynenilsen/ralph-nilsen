@@ -32,7 +32,7 @@ describe("Auth Router - Signup", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -152,7 +152,7 @@ describe("Auth Router - Signin", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -256,7 +256,7 @@ describe("Auth Router - Signout", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -325,7 +325,7 @@ describe("Auth Router - Me", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -420,7 +420,7 @@ describe("Auth Router - Password Reset", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -585,7 +585,7 @@ describe("Auth Router - Error Cases", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

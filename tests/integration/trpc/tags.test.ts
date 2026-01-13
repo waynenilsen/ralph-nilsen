@@ -30,7 +30,7 @@ describe("Tags Router - CRUD with Session Auth", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -193,7 +193,7 @@ describe("Tags Router - CRUD with API Key Auth", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -335,7 +335,7 @@ describe("Tags Router - Get Todos by Tag", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -438,7 +438,7 @@ describe("Tags Router - Validation and Edge Cases", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -621,7 +621,7 @@ describe("Tags Router - Error Cases", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

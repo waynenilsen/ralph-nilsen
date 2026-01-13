@@ -5,18 +5,23 @@ const DATABASE_URL =
 const DATABASE_URL_ADMIN =
   process.env.DATABASE_URL_ADMIN || "postgresql://todo_user:todo_pass@localhost:40001/todo_db";
 
+// Use larger pool size in test environment
+const isTest = process.env.NODE_ENV === "test" || process.env.BUN_ENV === "test";
+const poolMaxConnections = isTest ? 30 : 10;
+const adminPoolMaxConnections = isTest ? 20 : 5;
+
 export const pool = new Pool({
   connectionString: DATABASE_URL,
-  max: 10,
+  max: poolMaxConnections,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: isTest ? 10000 : 2000,
 });
 
 export const adminPool = new Pool({
   connectionString: DATABASE_URL_ADMIN,
-  max: 5,
+  max: adminPoolMaxConnections,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: isTest ? 10000 : 2000,
 });
 
 pool.on("error", (err) => {

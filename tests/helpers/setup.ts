@@ -5,18 +5,30 @@ const DATABASE_URL =
   process.env.DATABASE_URL || "postgresql://app_user:app_pass@localhost:40001/todo_db";
 
 let pool: Pool | null = null;
+let poolClosing: boolean = false;
 
 export function getTestPool(): Pool {
   if (!pool) {
-    pool = new Pool({ connectionString: DATABASE_URL });
+    pool = new Pool({
+      connectionString: DATABASE_URL,
+      max: 500, // High pool size for parallel tests (PostgreSQL configured for 1000)
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 30000,
+    });
+    poolClosing = false;
   }
   return pool;
 }
 
 export async function closeTestPool(): Promise<void> {
-  if (pool) {
-    await pool.end();
-    pool = null;
+  if (pool && !poolClosing) {
+    poolClosing = true;
+    try {
+      await pool.end();
+      pool = null;
+    } finally {
+      poolClosing = false;
+    }
   }
 }
 
@@ -37,6 +49,7 @@ export async function cleanupTestData(client: PoolClient): Promise<void> {
   await client.query("DELETE FROM sessions");
   await client.query("DELETE FROM password_reset_tokens");
   await client.query("DELETE FROM api_keys");
+  await client.query("DELETE FROM organization_invitations");
   await client.query("DELETE FROM user_tenants");
   // Clean up all test users (email ending in @test.com or starting with test-)
   await client.query("DELETE FROM users WHERE email LIKE 'test-%' OR email LIKE '%@test.com'");

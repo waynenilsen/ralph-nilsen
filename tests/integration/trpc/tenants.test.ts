@@ -26,7 +26,7 @@ describe("Tenants Router - Admin List", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -72,7 +72,7 @@ describe("Tenants Router - Admin Get", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -107,7 +107,7 @@ describe("Tenants Router - Admin Create", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -164,7 +164,7 @@ describe("Tenants Router - Admin Update", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -237,7 +237,7 @@ describe("Tenants Router - Admin Delete", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -273,7 +273,7 @@ describe("Tenants Router - Admin Stats", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -336,7 +336,7 @@ describe("Tenants Router - Admin Create API Key", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -396,7 +396,7 @@ describe("Tenants Router - Access Control", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

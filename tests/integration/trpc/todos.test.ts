@@ -31,7 +31,7 @@ describe("Todos Router - CRUD with Session Auth", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -197,7 +197,7 @@ describe("Todos Router - CRUD with API Key Auth", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -342,7 +342,7 @@ describe("Todos Router - Filtering", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -459,7 +459,7 @@ describe("Todos Router - Search", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -570,7 +570,7 @@ describe("Todos Router - Pagination", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -662,7 +662,7 @@ describe("Todos Router - Tag Operations", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -871,7 +871,7 @@ describe("Todos Router - Error Cases", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

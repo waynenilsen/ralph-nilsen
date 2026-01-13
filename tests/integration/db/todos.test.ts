@@ -24,7 +24,7 @@ describe("Todo Database Operations", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

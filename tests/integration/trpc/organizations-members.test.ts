@@ -22,7 +22,7 @@ describe("Organizations Router - Get Members", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -81,6 +81,12 @@ describe("Organizations Router - Get Members", () => {
       const { sessionToken, userId } = await createTestUserWithSession(client);
       await createTestUserTenant(client, userId, tenantId, "member");
 
+      // Update session to point to the target tenant
+      await client.query("UPDATE sessions SET tenant_id = $1 WHERE session_token = $2", [
+        tenantId,
+        sessionToken,
+      ]);
+
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
       const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
         tenantId,
@@ -108,7 +114,7 @@ describe("Organizations Router - Remove Member", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -213,6 +219,12 @@ describe("Organizations Router - Remove Member", () => {
       const { userId: member2Id } = await createTestUserWithSession(client);
       await createTestUserTenant(client, member2Id, tenantId, "member");
 
+      // Update session to point to the target tenant
+      await client.query("UPDATE sessions SET tenant_id = $1 WHERE session_token = $2", [
+        tenantId,
+        member1Token,
+      ]);
+
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [
         member1Id,
       ]);
@@ -243,7 +255,7 @@ describe("Organizations Router - Update Member Role", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -304,6 +316,12 @@ describe("Organizations Router - Update Member Role", () => {
       const { sessionToken, userId: adminId } = await createTestUserWithSession(client);
       await createTestUserTenant(client, adminId, tenantId, "admin");
 
+      // Update session to point to the target tenant
+      await client.query("UPDATE sessions SET tenant_id = $1 WHERE session_token = $2", [
+        tenantId,
+        sessionToken,
+      ]);
+
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [adminId]);
       const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
         tenantId,
@@ -338,6 +356,12 @@ describe("Organizations Router - Update Member Role", () => {
       const { userId: member2Id } = await createTestUserWithSession(client);
       await createTestUserTenant(client, member2Id, tenantId, "member");
 
+      // Update session to point to the target tenant
+      await client.query("UPDATE sessions SET tenant_id = $1 WHERE session_token = $2", [
+        tenantId,
+        member1Token,
+      ]);
+
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [
         member1Id,
       ]);
@@ -368,7 +392,7 @@ describe("Organizations Router - Transfer Ownership", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {
@@ -435,6 +459,12 @@ describe("Organizations Router - Transfer Ownership", () => {
 
       const { userId: memberId } = await createTestUserWithSession(client);
       await createTestUserTenant(client, memberId, tenantId, "member");
+
+      // Update session to point to the target tenant
+      await client.query("UPDATE sessions SET tenant_id = $1 WHERE session_token = $2", [
+        tenantId,
+        adminToken,
+      ]);
 
       const { rows: users } = await client.query("SELECT * FROM users WHERE id = $1", [adminId]);
       const { rows: tenants } = await client.query("SELECT * FROM tenants WHERE id = $1", [
@@ -503,7 +533,7 @@ describe("Organizations Router - Leave", () => {
   });
 
   afterAll(async () => {
-    await closeTestPool();
+    // await closeTestPool(); // Moved to global teardown
   });
 
   beforeEach(async () => {

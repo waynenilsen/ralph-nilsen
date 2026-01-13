@@ -1,7 +1,7 @@
 import { createTransport, type Transporter } from "nodemailer";
 
 const SMTP_HOST = process.env.SMTP_HOST || "localhost";
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || "1025", 10);
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || "40025", 10);
 const SMTP_USER = process.env.SMTP_USER || "";
 const SMTP_PASS = process.env.SMTP_PASS || "";
 const SMTP_FROM = process.env.SMTP_FROM || "noreply@todoapp.local";
@@ -15,6 +15,9 @@ function getTransporter(): Transporter {
       host: SMTP_HOST,
       port: SMTP_PORT,
       secure: false,
+      connectionTimeout: 5000, // 5 seconds timeout for connection
+      greetingTimeout: 5000, // 5 seconds timeout for greeting
+      socketTimeout: 10000, // 10 seconds socket timeout
       auth:
         SMTP_USER && SMTP_PASS
           ? {

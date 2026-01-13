@@ -12,7 +12,7 @@ import type {
   OrganizationInvitationWithInviter,
   OrganizationInvitationPublic,
 } from "@/shared/types";
-import { checkOrganizationRole, addUserToOrganization } from "@/server/lib/session";
+import { checkOrganizationRole } from "@/server/lib/session";
 import { adminPool } from "@/server/db";
 import { sendInvitationEmail, sendInvitationAcceptedEmail } from "@/server/lib/email";
 
@@ -217,11 +217,15 @@ export const invitationsRouter = router({
   }),
 
   accept: userProcedure.input(AcceptInvitationSchema).mutation(async ({ ctx, input }) => {
+    console.log("[accept] Starting, getting connection from adminPool");
     const client = await adminPool.connect();
+    console.log("[accept] Got connection, starting transaction");
     try {
       await client.query("BEGIN");
+      console.log("[accept] Transaction started");
 
       // Get the invitation with inviter details
+      console.log("[accept] Getting invitation with FOR UPDATE, token:", input.token);
       const { rows: invitations } = await client.query<
         OrganizationInvitation & { organization_name: string; inviter_email: string }
       >(
@@ -233,6 +237,7 @@ export const invitationsRouter = router({
          FOR UPDATE`,
         [input.token]
       );
+      console.log("[accept] Got invitation, count:", invitations.length);
 
       if (invitations.length === 0) {
         await client.query("ROLLBACK");
@@ -272,10 +277,12 @@ export const invitationsRouter = router({
       }
 
       // Check if user is already a member
+      console.log("[accept] Checking existing membership");
       const { rows: existingMember } = await client.query(
         `SELECT 1 FROM user_tenants WHERE user_id = $1 AND tenant_id = $2`,
         [ctx.user.id, invitation.tenant_id]
       );
+      console.log("[accept] Existing member check done:", existingMember.length);
 
       if (existingMember.length > 0) {
         await client.query("ROLLBACK");
@@ -285,8 +292,13 @@ export const invitationsRouter = router({
         });
       }
 
-      // Add user to organization
-      await addUserToOrganization(ctx.user.id, invitation.tenant_id, invitation.role);
+      // Add user to organization (inline to stay in same transaction)
+      console.log("[accept] Adding user to organization");
+      await client.query(
+        `INSERT INTO user_tenants (user_id, tenant_id, role) VALUES ($1, $2, $3)`,
+        [ctx.user.id, invitation.tenant_id, invitation.role]
+      );
+      console.log("[accept] User added to organization");
 
       // Update invitation status
       await client.query(
